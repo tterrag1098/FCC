@@ -1,6 +1,6 @@
 package wci.frontend.subsetc;
 
-import static wci.frontend.Source.EOF;
+import static wci.frontend.Source.*;
 import wci.frontend.EofToken;
 import wci.frontend.Scanner;
 import wci.frontend.Source;
@@ -80,18 +80,23 @@ public class SubsetCScanner extends Scanner
     {
         char currentChar = currentChar();
 
-        while (Character.isWhitespace(currentChar) || (currentChar == '{')) {
+        while (Character.isWhitespace(currentChar) || (currentChar == '/')) {
 
             // Start of a comment?
-            if (currentChar == '{') {
-                do {
-                    currentChar = nextChar();  // consume comment characters
-                } while ((currentChar != '}') && (currentChar != EOF));
-
-                // Found closing '}'?
-                if (currentChar == '}') {
-                    currentChar = nextChar();  // consume the '}'
-                }
+            if (currentChar == '/') {
+            	currentChar = nextChar();
+            	if (currentChar == '*') {
+            		do {
+            			currentChar = nextChar();
+            			if (currentChar == '*') {
+            				currentChar = nextChar();
+            			}
+            		} while (currentChar != '/' && currentChar != EOF);
+            	} else if (currentChar == '/') {
+            		do {
+            			currentChar = nextChar();
+            		} while (currentChar != EOL && currentChar != EOF);
+            	}                
             }
 
             // Not a comment.
