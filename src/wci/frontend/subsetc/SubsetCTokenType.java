@@ -1,6 +1,7 @@
 package wci.frontend.subsetc;
 
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.HashSet;
 
 import wci.frontend.TokenType;
@@ -22,7 +23,7 @@ public enum SubsetCTokenType implements TokenType
 
     // Special symbols.
     PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"),
-    DOT("."), COMMA(","), SEMICOLON(";"), COLON(":"), QUOTE("\""),
+    COMMA(","), SEMICOLON(";"), COLON(":"), QUOTE("\""),
     EQUALS("="), NOT_EQUALS("!="), LESS_THAN("<"), LESS_EQUALS("<="),
     GREATER_EQUALS(">="), GREATER_THAN(">"), LEFT_PAREN("("), RIGHT_PAREN(")"),
     LEFT_BRACKET("["), RIGHT_BRACKET("]"), LEFT_BRACE("{"), RIGHT_BRACE("}"),
@@ -45,7 +46,7 @@ public enum SubsetCTokenType implements TokenType
      */
     SubsetCTokenType()
     {
-        this.text = this.toString().toLowerCase();
+        this.text = this.toString().toLowerCase(Locale.US);
     }
 
     /**

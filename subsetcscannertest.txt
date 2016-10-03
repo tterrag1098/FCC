@@ -10,6 +10,12 @@ Two /*comments in*/ /*a row*/ here
 Hello world
 begin BEGIN Begin BeGiN begins
 
+// Control statements
+if while
+
+// Data types
+int float
+
 // String tokens
 "Hello, world."
 "It's Friday!"
@@ -20,8 +26,7 @@ spans\
 source lines."
 
 // Special symbol tokens
-+ - * / := . , ; : = <> < <= >= > ( ) [ ] { } } ^
-+-:=<>=<==.....
++ - * / , ; : = < <= >= > ( ) [ ] { } } ^
 
 // Number tokens
 0 1 20 00000000000000000032  31415926
@@ -35,4 +40,6 @@ source lines."
 // Bad tokens
 123e99  123456789012345  1234.56E.  3.  5..  .14  314.e-2
 What?
+2abc
+.. . :=
 "String not closed
