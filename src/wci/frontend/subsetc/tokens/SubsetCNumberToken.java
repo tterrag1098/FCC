@@ -1,11 +1,7 @@
 package wci.frontend.subsetc.tokens;
 
-import static wci.frontend.subsetc.SubsetCErrorCode.INVALID_NUMBER;
-import static wci.frontend.subsetc.SubsetCErrorCode.RANGE_INTEGER;
-import static wci.frontend.subsetc.SubsetCErrorCode.RANGE_REAL;
-import static wci.frontend.subsetc.SubsetCTokenType.ERROR;
-import static wci.frontend.subsetc.SubsetCTokenType.INTEGER;
-import static wci.frontend.subsetc.SubsetCTokenType.REAL;
+import static wci.frontend.subsetc.SubsetCErrorCode.*;
+import static wci.frontend.subsetc.SubsetCTokenType.*;
 import wci.frontend.Source;
 import wci.frontend.subsetc.SubsetCToken;
 
@@ -59,7 +55,7 @@ public class SubsetCNumberToken extends SubsetCToken
         boolean sawDotDot = false;     // true if saw .. token
         char currentChar;              // current character
 
-        type = INTEGER;  // assume INTEGER token type for now
+        type = INT;  // assume INTEGER token type for now
 
         // Extract the digits of the whole part of the number.
         wholeDigits = unsignedIntegerDigits(textBuffer);
@@ -75,7 +71,7 @@ public class SubsetCNumberToken extends SubsetCToken
                 sawDotDot = true;  // it's a ".." token, so don't consume it
             }
             else {
-                type = REAL;  // decimal point, so token type is REAL
+                type = FLOAT;  // decimal point, so token type is FLOAT
                 textBuffer.append(currentChar);
                 currentChar = nextChar();  // consume decimal point
 
@@ -91,7 +87,7 @@ public class SubsetCNumberToken extends SubsetCToken
         // There cannot be an exponent if we already saw a ".." token.
         currentChar = currentChar();
         if (!sawDotDot && ((currentChar == 'E') || (currentChar == 'e'))) {
-            type = REAL;  // exponent, so token type is REAL
+            type = FLOAT;  // exponent, so token type is REAL
             textBuffer.append(currentChar);
             currentChar = nextChar();  // consume 'E' or 'e'
 
@@ -107,7 +103,7 @@ public class SubsetCNumberToken extends SubsetCToken
         }
 
         // Compute the value of an integer number token.
-        if (type == INTEGER) {
+        if (type == INT) {
             int integerValue = computeIntegerValue(wholeDigits);
 
             if (type != ERROR) {
@@ -116,7 +112,7 @@ public class SubsetCNumberToken extends SubsetCToken
         }
 
         // Compute the value of a real number token.
-        else if (type == REAL) {
+        else if (type == FLOAT) {
             float floatValue = computeFloatValue(wholeDigits, fractionDigits,
                                                  exponentDigits, exponentSign);
 

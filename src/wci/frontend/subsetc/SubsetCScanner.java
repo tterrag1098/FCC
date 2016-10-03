@@ -55,7 +55,7 @@ public class SubsetCScanner extends Scanner
         else if (Character.isDigit(currentChar)) {
             token = new SubsetCNumberToken(source);
         }
-        else if (currentChar == '\'') {
+        else if (currentChar == '\"') {
             token = new SubsetCStringToken(source);
         }
         else if (SubsetCTokenType.SPECIAL_SYMBOLS

@@ -11,16 +11,16 @@ Hello world
 begin BEGIN Begin BeGiN begins
 
 // String tokens
-'Hello, world.'
-'It''s Friday!'
-''
-' '' '' '   ''''''
-'This string
-spans
-source lines.'
+"Hello, world."
+"It's Friday!"
+""
+" \" \" "   "\"\""
+"This string\
+spans\
+source lines."
 
 // Special symbol tokens
-+ - * / := . , ; : = <> < <= >= > ( ) [ ] { } } ^ ..
++ - * / := . , ; : = <> < <= >= > ( ) [ ] { } } ^
 +-:=<>=<==.....
 
 // Number tokens
@@ -29,10 +29,10 @@ source lines.'
 0.00031415926E4  0.00031415926e+00004  31415.926e-4
 3141592600000000000000000000000e-30
 
-// Decimal point or ..
-3.14  3..14
+// Decimal point
+3.14
 
 // Bad tokens
 123e99  123456789012345  1234.56E.  3.  5..  .14  314.e-2
 What?
-'String not closed
+"String not closed

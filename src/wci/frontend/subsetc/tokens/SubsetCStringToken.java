@@ -1,6 +1,6 @@
 package wci.frontend.subsetc.tokens;
 
-import static wci.frontend.Source.EOF;
+import static wci.frontend.Source.*;
 import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_EOF;
 import static wci.frontend.subsetc.SubsetCTokenType.ERROR;
 import static wci.frontend.subsetc.SubsetCTokenType.STRING;
@@ -39,7 +39,7 @@ public class SubsetCStringToken extends SubsetCToken
         StringBuilder valueBuffer = new StringBuilder();
 
         char currentChar = nextChar();  // consume initial quote
-        textBuffer.append('\'');
+        textBuffer.append('"');
 
         // Get string characters.
         do {
@@ -48,26 +48,29 @@ public class SubsetCStringToken extends SubsetCToken
                 currentChar = ' ';
             }
 
-            if ((currentChar != '\'') && (currentChar != EOF)) {
+            if (currentChar != '"' && currentChar != '\\' && currentChar != EOF) {
                 textBuffer.append(currentChar);
                 valueBuffer.append(currentChar);
                 currentChar = nextChar();  // consume character
             }
 
-            // Quote?  Each pair of adjacent quotes represents a single-quote.
-            if (currentChar == '\'') {
-                while ((currentChar == '\'') && (peekChar() == '\'')) {
-                    textBuffer.append("''");
-                    valueBuffer.append(currentChar); // append single-quote
-                    currentChar = nextChar();        // consume pair of quotes
-                    currentChar = nextChar();
-                }
+            // Quote?  Each pair of backslash/quote represents a quote.
+            if (currentChar == '\\') {
+            	if (peekChar() == EOL) {
+            		textBuffer.append("\\\\n");
+            		valueBuffer.append(" ");
+				} else if (peekChar() == '"') {
+					textBuffer.append("\\\"");
+					valueBuffer.append(peekChar()); // append quote
+				}
+				currentChar = nextChar(); // consume escape
+				currentChar = nextChar();
             }
-        } while ((currentChar != '\'') && (currentChar != EOF));
+        } while ((currentChar != '"') && (currentChar != EOF));
 
-        if (currentChar == '\'') {
+        if (currentChar == '"') {
             nextChar();  // consume final quote
-            textBuffer.append('\'');
+            textBuffer.append('"');
 
             type = STRING;
             value = valueBuffer.toString();
