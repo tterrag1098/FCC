@@ -11,7 +11,7 @@ Hello world
 begin BEGIN Begin BeGiN begins
 
 // Control statements
-if while
+if else while
 
 // Data types
 int float
