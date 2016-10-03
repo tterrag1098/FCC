@@ -52,7 +52,6 @@ public class SubsetCNumberToken extends SubsetCToken
         String fractionDigits = null;  // digits after the decimal point
         String exponentDigits = null;  // exponent digits
         char exponentSign = '+';       // exponent sign '+' or '-'
-        boolean sawDotDot = false;     // true if saw .. token
         char currentChar;              // current character
 
         type = INT;  // assume INTEGER token type for now
@@ -64,29 +63,24 @@ public class SubsetCNumberToken extends SubsetCToken
         }
 
         // Is there a . ?
-        // It could be a decimal point or the start of a .. token.
-        currentChar = currentChar();
-        if (currentChar == '.') {
-            if (peekChar() == '.') {
-                sawDotDot = true;  // it's a ".." token, so don't consume it
-            }
-            else {
-                type = FLOAT;  // decimal point, so token type is FLOAT
-                textBuffer.append(currentChar);
-                currentChar = nextChar();  // consume decimal point
+		// It could be a decimal point or the start of a .. token.
+		currentChar = currentChar();
+		if (currentChar == '.') {
+			type = FLOAT; // decimal point, so token type is FLOAT
+			textBuffer.append(currentChar);
+			currentChar = nextChar(); // consume decimal point
 
-                // Collect the digits of the fraction part of the number.
-                fractionDigits = unsignedIntegerDigits(textBuffer);
-                if (type == ERROR) {
-                    return;
-                }
-            }
-        }
+			// Collect the digits of the fraction part of the number.
+			fractionDigits = unsignedIntegerDigits(textBuffer);
+			if (type == ERROR) {
+				return;
+			}
+		}
 
         // Is there an exponent part?
         // There cannot be an exponent if we already saw a ".." token.
         currentChar = currentChar();
-        if (!sawDotDot && ((currentChar == 'E') || (currentChar == 'e'))) {
+        if (currentChar == 'E' || currentChar == 'e') {
             type = FLOAT;  // exponent, so token type is REAL
             textBuffer.append(currentChar);
             currentChar = nextChar();  // consume 'E' or 'e'
