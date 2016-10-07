@@ -2,6 +2,8 @@ package wci.frontend;
 
 import wci.frontend.pascal.PascalParserTD;
 import wci.frontend.pascal.PascalScanner;
+import wci.frontend.subsetc.SubsetCParserTD;
+import wci.frontend.subsetc.SubsetCScanner;
 
 /**
  * <h1>FrontendFactory</h1>
@@ -31,13 +33,13 @@ public class FrontendFactory
             Scanner scanner = new PascalScanner(source);
             return new PascalParserTD(scanner);
         }
-        else if (!language.equalsIgnoreCase("Pascal")) {
+        else if (language.equalsIgnoreCase("SubsetC") && type.equalsIgnoreCase("top-down")) {
+        	Scanner scanner = new SubsetCScanner(source);
+        	return new SubsetCParserTD(scanner);
+    	}
+        else {
             throw new Exception("Parser factory: Invalid language '" +
                                 language + "'");
-        }
-        else {
-            throw new Exception("Parser factory: Invalid type '" +
-                                type + "'");
         }
     }
 }

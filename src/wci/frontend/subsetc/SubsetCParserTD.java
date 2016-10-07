@@ -1,11 +1,17 @@
 package wci.frontend.subsetc;
 
-import wci.frontend.*;
+import static wci.frontend.subsetc.SubsetCErrorCode.IO_ERROR;
+import static wci.frontend.subsetc.SubsetCTokenType.ERROR;
+import static wci.frontend.subsetc.SubsetCTokenType.IDENTIFIER;
+import static wci.message.MessageType.PARSER_SUMMARY;
+import wci.frontend.EofToken;
+import wci.frontend.Parser;
+import wci.frontend.Scanner;
+import wci.frontend.Token;
+import wci.frontend.TokenType;
+import wci.frontend.pascal.PascalErrorCode;
+import wci.intermediate.SymTabEntry;
 import wci.message.Message;
-
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.message.MessageType.*;
 
 /**
  * <h1>PascalParserTD</h1>
@@ -43,21 +49,24 @@ public class SubsetCParserTD extends Parser
             while (!((token = nextToken()) instanceof EofToken)) {
                 TokenType tokenType = token.getType();
 
-                if (tokenType != ERROR) {
+                // Cross reference only the identifiers.
+                if (tokenType == IDENTIFIER) {
+                    String name = token.getText().toLowerCase();
 
-                    // Format each token.
-                    sendMessage(new Message(TOKEN,
-                                            new Object[] {token.getLineNumber(),
-                                                          token.getPosition(),
-                                                          tokenType,
-                                                          token.getText(),
-                                                          token.getValue()}));
-                }
-                else {
-                    errorHandler.flag(token, (SubsetCErrorCode) token.getValue(),
-                                      this);
+                    // If it's not already in the symbol table,
+                    // create and enter a new entry for the identifier.
+                    SymTabEntry entry = symTabStack.lookup(name);
+                    if (entry == null) {
+                        entry = symTabStack.enterLocal(name);
+                    }
+
+                    // Append the current line number to the entry.
+                    entry.appendLineNumber(token.getLineNumber());
                 }
 
+                else if (tokenType == ERROR) {
+                    errorHandler.flag(token, token.getValue(), this);
+                }
             }
 
             // Send the parser summary message.
