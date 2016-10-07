@@ -114,6 +114,16 @@ public class SubsetCNumberToken extends SubsetCToken
                 value = new Float(floatValue);
             }
         }
+        
+        
+		if (Character.isAlphabetic(peekChar())) {
+			do {
+				textBuffer.append(currentChar);
+				currentChar = nextChar();
+				type = ERROR;
+				value = INVALID_NUMBER;
+			} while (Character.isAlphabetic(currentChar));
+		}
     }
 
     /**
