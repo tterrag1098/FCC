@@ -20,6 +20,8 @@ public enum SubsetCTokenType implements TokenType
 	INT, FLOAT,
 	
 	IF, ELSE, WHILE,
+	
+	VOID, RETURN,
 
     // Special symbols.
     PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"),
