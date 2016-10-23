@@ -1,8 +1,9 @@
 package wci.frontend.subsetc;
 
-import java.util.Hashtable;
-import java.util.Locale;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
 
 import wci.frontend.TokenType;
 
@@ -29,17 +30,19 @@ public enum SubsetCTokenType implements TokenType
     EQUALS("="), NOT_EQUALS("!="), LESS_THAN("<"), LESS_EQUALS("<="),
     GREATER_EQUALS(">="), GREATER_THAN(">"), LEFT_PAREN("("), RIGHT_PAREN(")"),
     LEFT_BRACKET("["), RIGHT_BRACKET("]"), LEFT_BRACE("{"), RIGHT_BRACE("}"),
-    UP_ARROW("^"),
+    UP_ARROW("^"), MOD("%"),
+    
+    AND("&&"), OR("||"),
 
     STRING, // do we need this?
     
     IDENTIFIER, ERROR, END_OF_FILE;
 
     private static final int FIRST_RESERVED_INDEX = INT.ordinal();
-    private static final int LAST_RESERVED_INDEX  = WHILE.ordinal();
+    private static final int LAST_RESERVED_INDEX  = RETURN.ordinal();
 
     private static final int FIRST_SPECIAL_INDEX = PLUS.ordinal();
-    private static final int LAST_SPECIAL_INDEX  = UP_ARROW.ordinal();
+    private static final int LAST_SPECIAL_INDEX  = OR.ordinal();
 
     private String text;  // token text
 
@@ -80,8 +83,7 @@ public enum SubsetCTokenType implements TokenType
 
     // Hash table of Pascal special symbols.  Each special symbol's text
     // is the key to its Pascal token type.
-    public static Hashtable<String, SubsetCTokenType> SPECIAL_SYMBOLS =
-        new Hashtable<String, SubsetCTokenType>();
+    public static Map<String, SubsetCTokenType> SPECIAL_SYMBOLS = new HashMap<>();
     static {
         SubsetCTokenType values[] = SubsetCTokenType.values();
         for (int i = FIRST_SPECIAL_INDEX; i <= LAST_SPECIAL_INDEX; ++i) {

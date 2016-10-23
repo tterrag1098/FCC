@@ -179,6 +179,10 @@ public class SubsetCNumberToken extends SubsetCToken
             integerValue = 10*integerValue +
                            Character.getNumericValue(digits.charAt(index++));
         }
+        
+        int i = 0;
+        int j = i + 2;
+        i = i + 5;
 
         // No overflow:  Return the integer value.
         if (integerValue >= prevValue) {

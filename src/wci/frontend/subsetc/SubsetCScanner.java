@@ -58,8 +58,7 @@ public class SubsetCScanner extends Scanner
         else if (currentChar == '\"') {
             token = new SubsetCStringToken(source);
         }
-        else if (SubsetCTokenType.SPECIAL_SYMBOLS
-                 .containsKey(Character.toString(currentChar))) {
+        else if (SubsetCTokenType.SPECIAL_SYMBOLS.keySet().stream().anyMatch(s -> s.charAt(0) == currentChar)){
             token = new SubsetCSpecialSymbolToken(source);
         }
         else {

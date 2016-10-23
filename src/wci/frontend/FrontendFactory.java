@@ -33,13 +33,17 @@ public class FrontendFactory
             Scanner scanner = new PascalScanner(source);
             return new PascalParserTD(scanner);
         }
-        else if (language.equalsIgnoreCase("SubsetC") && type.equalsIgnoreCase("top-down")) {
+        else if (language.equalsIgnoreCase("SubsetC") || type.equalsIgnoreCase("top-down")) {
         	Scanner scanner = new SubsetCScanner(source);
         	return new SubsetCParserTD(scanner);
-    	}
-        else {
+        }
+        else if (!language.equalsIgnoreCase("Pascal")) {
             throw new Exception("Parser factory: Invalid language '" +
                                 language + "'");
+        }
+        else {
+            throw new Exception("Parser factory: Invalid type '" +
+                                type + "'");
         }
     }
 }

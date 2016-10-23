@@ -1,13 +1,18 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import wci.frontend.*;
-import wci.intermediate.*;
-import wci.backend.*;
-import wci.message.*;
+import wci.backend.Backend;
+import wci.backend.BackendFactory;
+import wci.frontend.FrontendFactory;
+import wci.frontend.Parser;
+import wci.frontend.Source;
+import wci.intermediate.ICode;
+import wci.intermediate.SymTabStack;
+import wci.message.Message;
+import wci.message.MessageListener;
+import wci.message.MessageType;
 import wci.util.CrossReferencer;
-import static wci.frontend.pascal.PascalTokenType.STRING;
-import static wci.message.MessageType.*;
+import wci.util.ParseTreePrinter;
 
 /**
  * <h1>Pascal</h1>
@@ -19,14 +24,14 @@ import static wci.message.MessageType.*;
  */
 public class SubsetC
 {
-    private Parser parser;    // language-independent parser
-    private Source source;    // language-independent scanner
-    private ICode iCode;      // generated intermediate code
-    private SymTabStack symTabStack;    // generated symbol table
-    private Backend backend;  // backend
+    private Parser parser;            // language-independent parser
+    private Source source;            // language-independent scanner
+    private ICode iCode;              // generated intermediate code
+    private SymTabStack symTabStack;  // symbol table stack
+    private Backend backend;          // backend
 
     /**
-     * Compile or interpret a SubsetC source program.
+     * Compile or interpret a Pascal source program.
      * @param operation either "compile" or "execute".
      * @param filePath the source file path.
      * @param flags the command line flags.
@@ -48,16 +53,24 @@ public class SubsetC
 
             parser.parse();
             source.close();
-			
-            iCode = parser.getICode();
-            symTabStack = parser.getSymTabStack();
 
-            if (xref) {
-                CrossReferencer crossReferencer = new CrossReferencer();
-                crossReferencer.print(symTabStack);
+            if (parser.getErrorCount() == 0) {
+                iCode = parser.getICode();
+                symTabStack = parser.getSymTabStack();
+
+                if (xref) {
+                    CrossReferencer crossReferencer = new CrossReferencer();
+                    crossReferencer.print(symTabStack);
+                }
+
+                if (intermediate) {
+                    ParseTreePrinter treePrinter =
+                                         new ParseTreePrinter(System.out);
+                    treePrinter.print(iCode);
+                }
+
+                backend.process(iCode, symTabStack);
             }
-
-            backend.process(iCode, symTabStack);
         }
         catch (Exception ex) {
             System.out.println("***** Internal translator error. *****");
@@ -137,11 +150,6 @@ public class SubsetC
         }
     }
 
-    private static final String TOKEN_FORMAT =
-        ">>> %-15s line=%03d, pos=%2d, text=\"%s\"";
-    private static final String VALUE_FORMAT =
-        ">>>                 value=%s";
-
     private static final String PARSER_SUMMARY_FORMAT =
         "\n%,20d source lines." +
         "\n%,20d syntax errors." +
@@ -164,28 +172,15 @@ public class SubsetC
 
             switch (type) {
 
-                case TOKEN: {
-                    Object body[] = (Object []) message.getBody();
-                    int line = (Integer) body[0];
-                    int position = (Integer) body[1];
-                    TokenType tokenType = (TokenType) body[2];
-                    String tokenText = (String) body[3];
-                    Object tokenValue = body[4];
+                case PARSER_SUMMARY: {
+                    Number body[] = (Number[]) message.getBody();
+                    int statementCount = (Integer) body[0];
+                    int syntaxErrors = (Integer) body[1];
+                    float elapsedTime = (Float) body[2];
 
-                    System.out.println(String.format(TOKEN_FORMAT,
-                                                     tokenType,
-                                                     line,
-                                                     position,
-                                                     tokenText));
-                    if (tokenValue != null) {
-                        if (tokenType == STRING) {
-                            tokenValue = "\"" + tokenValue + "\"";
-                        }
-
-                        System.out.println(String.format(VALUE_FORMAT,
-                                                         tokenValue));
-                    }
-
+                    System.out.printf(PARSER_SUMMARY_FORMAT,
+                                      statementCount, syntaxErrors,
+                                      elapsedTime);
                     break;
                 }
 
@@ -214,18 +209,6 @@ public class SubsetC
                     }
 
                     System.out.println(flagBuffer.toString());
-                    break;
-                }
-
-                case PARSER_SUMMARY: {
-                    Number body[] = (Number[]) message.getBody();
-                    int statementCount = (Integer) body[0];
-                    int syntaxErrors = (Integer) body[1];
-                    float elapsedTime = (Float) body[2];
-
-                    System.out.printf(PARSER_SUMMARY_FORMAT,
-                                      statementCount, syntaxErrors,
-                                      elapsedTime);
                     break;
                 }
             }

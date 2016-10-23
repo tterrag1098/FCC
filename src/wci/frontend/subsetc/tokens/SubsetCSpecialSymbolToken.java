@@ -74,6 +74,15 @@ public class SubsetCSpecialSymbolToken extends SubsetCToken
                 break;
             }
 
+            case '&': 
+            case '|': {
+            	char nextChar = nextChar(); // consume first '&' or '|'
+            	if (currentChar == nextChar) {
+            		text += currentChar;
+            		nextChar();
+            	}
+            	break;
+            }
 
             default: {
                 nextChar();  // consume bad character
