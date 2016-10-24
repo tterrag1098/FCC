@@ -1,9 +1,6 @@
 package wci.frontend.subsetc.parsers;
 
-import static wci.frontend.subsetc.SubsetCTokenType.LEFT_BRACE;
-import static wci.frontend.subsetc.SubsetCTokenType.LEFT_PAREN;
-import static wci.frontend.subsetc.SubsetCTokenType.RIGHT_PAREN;
-
+import static wci.frontend.subsetc.SubsetCTokenType.*;
 import java.util.EnumSet;
 
 import wci.frontend.Token;
@@ -11,6 +8,7 @@ import wci.frontend.subsetc.SubsetCErrorCode;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.ICodeNode;
+import wci.intermediate.icodeimpl.ICodeNodeTypeImpl;
 import wci.intermediate.ICodeFactory;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
 
@@ -23,7 +21,7 @@ public class ControlStatementParser extends StatementParser {
 	@Override
 	public ICodeNode parse(Token token) throws Exception {
 		
-		ICodeNode controlNode = ICodeFactory.createICodeNode(token.getType() == SubsetCTokenType.WHILE ? LOOP : IF);
+		ICodeNode controlNode = ICodeFactory.createICodeNode(token.getType() == SubsetCTokenType.WHILE ? LOOP : ICodeNodeTypeImpl.IF);
 
 		token = nextToken(); // Consume the control statement
 
@@ -33,7 +31,7 @@ public class ControlStatementParser extends StatementParser {
 			token = nextToken();
 		}
 		
-		while (token.getType() != RIGHT_PAREN) {
+		while (token.getType() != RIGHT_PAREN && token.getType() != ERROR) {
 			ExpressionParser expr = new ExpressionParser(this);
 			ICodeNode node = expr.parse(token);
 			controlNode.addChild(node);

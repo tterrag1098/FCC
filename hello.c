@@ -11,13 +11,11 @@
 		{
 			abc = i * (abc - 1);
 		}
-		if (abc >= 2) 
-		{ 
-			i = i - 1; 
+		if (abc >= 2) i = i - 1;
+		
+		if ((gibberish*#*(758iusdhf()
+		{
+			abc = abc - 2;
 		}
-		//if ((gibberish*#*(758iusdhf()
-		//{
-		//	abc = abc - 2;
-		//}
 	}
 }
