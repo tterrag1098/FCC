@@ -2,8 +2,7 @@ package wci.frontend.subsetc.parsers;
 
 import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_SEMICOLON;
 import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
-import static wci.frontend.subsetc.SubsetCTokenType.IDENTIFIER;
-import static wci.frontend.subsetc.SubsetCTokenType.SEMICOLON;
+import static wci.frontend.subsetc.SubsetCTokenType.*;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.LINE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.NO_OP;
 import wci.frontend.EofToken;
@@ -124,6 +123,9 @@ public class StatementParser extends SubsetCParserTD
             // Look for the semicolon between statements.
             if (tokenType == SEMICOLON) {
                 token = nextToken();  // consume the ;
+            }
+            else if (tokenType == IF || tokenType == WHILE) {
+            	// NO-OP
             }
 
             // If at the start of the next assignment statement,
