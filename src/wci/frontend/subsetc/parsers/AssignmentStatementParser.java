@@ -1,9 +1,11 @@
 package wci.frontend.subsetc.parsers;
 
 import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_COLON_EQUALS;
+import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_SEMICOLON;
 import static wci.frontend.subsetc.SubsetCTokenType.EQUALS;
 import static wci.frontend.subsetc.SubsetCTokenType.FLOAT;
 import static wci.frontend.subsetc.SubsetCTokenType.INT;
+import static wci.frontend.subsetc.SubsetCTokenType.SEMICOLON;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.ID;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.ASSIGN;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.VARIABLE;
@@ -85,6 +87,13 @@ public class AssignmentStatementParser extends StatementParser
         // node as its second child.
         ExpressionParser expressionParser = new ExpressionParser(this);
         assignNode.addChild(expressionParser.parse(token));
+        
+        token = currentToken();
+        if (token.getType() == SEMICOLON) {
+        	token = nextToken();
+        } else {
+        	errorHandler.flag(token, MISSING_SEMICOLON, this);
+        }
 
         return assignNode;
     }

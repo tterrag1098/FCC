@@ -14,15 +14,16 @@ import static wci.frontend.subsetc.SubsetCTokenType.PLUS;
 import static wci.frontend.subsetc.SubsetCTokenType.RIGHT_PAREN;
 import static wci.frontend.subsetc.SubsetCTokenType.SLASH;
 import static wci.frontend.subsetc.SubsetCTokenType.STAR;
+import static wci.frontend.subsetc.SubsetCTokenType.TRUE;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.ID;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.VALUE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.ADD;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.BOOLEAN_CONSTANT;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.EQ;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.FLOAT_DIVIDE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.GE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.GT;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.INTEGER_CONSTANT;
-import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.INTEGER_DIVIDE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.LE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.LT;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.MULTIPLY;
@@ -38,7 +39,6 @@ import java.util.HashMap;
 
 import wci.frontend.Token;
 import wci.frontend.TokenType;
-import wci.frontend.pascal.PascalTokenType;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.ICodeFactory;
@@ -307,6 +307,15 @@ public class ExpressionParser extends StatementParser
 
                 token = nextToken();  // consume the number
                 break;
+            }
+            
+            case TRUE:
+            case FALSE: {
+            	rootNode = ICodeFactory.createICodeNode(BOOLEAN_CONSTANT);
+            	rootNode.setAttribute(VALUE, tokenType == TRUE ? true : false);
+            	
+            	token = nextToken();
+            	break;
             }
 
             case STRING: {

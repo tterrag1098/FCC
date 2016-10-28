@@ -79,7 +79,6 @@ public class StatementParser extends SubsetCParserTD
 
         // Set the current line number as an attribute.
         setLineNumber(statementNode, token);
-
         return statementNode;
     }
 
@@ -118,28 +117,7 @@ public class StatementParser extends SubsetCParserTD
             parentNode.addChild(statementNode);
 
             token = currentToken();
-            TokenType tokenType = token.getType();
-
-            // Look for the semicolon between statements.
-            if (tokenType == SEMICOLON) {
-                token = nextToken();  // consume the ;
-            }
-            else if (tokenType == IF || tokenType == WHILE) {
-            	// NO-OP
-            }
-
-            // If at the start of the next assignment statement,
-            // then missing a semicolon.
-            else if (tokenType == IDENTIFIER) {
-                errorHandler.flag(token, MISSING_SEMICOLON, this);
-            }
-
-            // Unexpected token.
-            else if (tokenType != terminator) {
-                errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                token = nextToken();  // consume the unexpected token
-            }
-        }
+     }
 
         // Look for the terminator token.
         if (token.getType() == terminator) {

@@ -22,6 +22,8 @@ public enum SubsetCTokenType implements TokenType
 	
 	IF, ELSE, WHILE,
 	
+	TRUE, FALSE,
+	
 	VOID, RETURN,
 
     // Special symbols.
