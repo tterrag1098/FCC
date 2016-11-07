@@ -7,7 +7,7 @@ BEGIN {IF statements}
     IF i < j THEN t := 300;
 
     {Cascading IF THEN ELSEs.}
-    IF      (i = 1) AND (i = 1) THEN f := 10
+    IF      i = 1 THEN f := 10
     ELSE IF i = 2 THEN f := 20
     ELSE IF i = 3 THEN t := 30
     ELSE IF i = 4 THEN f := 40
