@@ -1,3 +1,5 @@
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ICODE;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 
@@ -7,6 +9,7 @@ import wci.frontend.FrontendFactory;
 import wci.frontend.Parser;
 import wci.frontend.Source;
 import wci.intermediate.ICode;
+import wci.intermediate.SymTabEntry;
 import wci.intermediate.SymTabStack;
 import wci.message.Message;
 import wci.message.MessageListener;
@@ -55,8 +58,10 @@ public class SubsetC
             source.close();
 
             if (parser.getErrorCount() == 0) {
-                iCode = parser.getICode();
                 symTabStack = parser.getSymTabStack();
+
+                SymTabEntry programId = symTabStack.getProgramId();
+                iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
 
                 if (xref) {
                     CrossReferencer crossReferencer = new CrossReferencer();
@@ -66,7 +71,7 @@ public class SubsetC
                 if (intermediate) {
                     ParseTreePrinter treePrinter =
                                          new ParseTreePrinter(System.out);
-                    treePrinter.print(iCode);
+                    treePrinter.print(symTabStack);
                 }
 
                 backend.process(iCode, symTabStack);
