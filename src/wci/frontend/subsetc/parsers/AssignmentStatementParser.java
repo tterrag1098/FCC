@@ -50,10 +50,8 @@ public class AssignmentStatementParser extends StatementParser
         if (token.getType() == FLOAT || token.getType() == INT) {
         	Token type = token;
         	token = nextToken();
-        	if (symTabStack.lookup(token.getText().toLowerCase()) != null) {
-        		errorHandler.flag(token, SubsetCErrorCode.IDENTIFIER_REDEFINED, this);
-        	} else {
-        		symTabStack.getLocalSymTab().enter(token.getText().toLowerCase());
+        	if (symTabStack.lookup(token.getText().toLowerCase()) == null) {
+        		errorHandler.flag(token, SubsetCErrorCode.IDENTIFIER_UNDEFINED, this);
         	}
         }
 
