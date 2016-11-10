@@ -17,9 +17,7 @@ import wci.frontend.TokenType;
  */
 public enum SubsetCTokenType implements TokenType
 {
-    // Reserved words.
-	INT, FLOAT,
-	
+	// Reserved words.
 	IF, ELSE, WHILE,
 	
 	TRUE, FALSE,
@@ -38,9 +36,9 @@ public enum SubsetCTokenType implements TokenType
 
     STRING, // do we need this?
     
-    IDENTIFIER, ERROR, END_OF_FILE;
+ 	INT, FLOAT, IDENTIFIER, ERROR, END_OF_FILE;
 
-    private static final int FIRST_RESERVED_INDEX = INT.ordinal();
+    private static final int FIRST_RESERVED_INDEX = IF.ordinal();
     private static final int LAST_RESERVED_INDEX  = RETURN.ordinal();
 
     private static final int FIRST_SPECIAL_INDEX = PLUS.ordinal();

@@ -1,9 +1,13 @@
 // Write 'Hello, world.' ten times.
 
+int foo;
+
 //int main() 
 {	
-	int i = 0;
-	int abc = 10;
+	int i;
+	i = 0;
+	int abc;
+	abc = 10;
 	// Compound expression
 	while (true)
 	{

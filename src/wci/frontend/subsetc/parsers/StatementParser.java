@@ -1,18 +1,24 @@
 package wci.frontend.subsetc.parsers;
 
-import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_SEMICOLON;
-import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
-import static wci.frontend.subsetc.SubsetCTokenType.*;
+import static wci.frontend.subsetc.SubsetCTokenType.ELSE;
+import static wci.frontend.subsetc.SubsetCTokenType.FLOAT;
+import static wci.frontend.subsetc.SubsetCTokenType.IDENTIFIER;
+import static wci.frontend.subsetc.SubsetCTokenType.INT;
+import static wci.frontend.subsetc.SubsetCTokenType.SEMICOLON;
+import static wci.frontend.subsetc.SubsetCTokenType.WHILE;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.LINE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.NO_OP;
+
+import java.util.EnumSet;
+
 import wci.frontend.EofToken;
 import wci.frontend.Token;
-import wci.frontend.TokenType;
 import wci.frontend.subsetc.SubsetCErrorCode;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
+import wci.intermediate.symtabimpl.DefinitionImpl;
 
 /**
  * <h1>StatementParser</h1>
@@ -24,7 +30,7 @@ import wci.intermediate.ICodeNode;
  */
 public class StatementParser extends SubsetCParserTD
 {
-    /**
+	/**
      * Constructor.
      * @param parent the parent parser.
      */
@@ -33,6 +39,14 @@ public class StatementParser extends SubsetCParserTD
         super(parent);
     }
 
+    // Synchronization set for starting a statement.
+    protected static final EnumSet<SubsetCTokenType> STMT_START_SET =
+        EnumSet.of(INT, FLOAT, WHILE, SubsetCTokenType.IF, WHILE, IDENTIFIER, SEMICOLON);
+
+    // Synchronization set for following a statement.
+    protected static final EnumSet<SubsetCTokenType> STMT_FOLLOW_SET =
+        EnumSet.of(SEMICOLON, ELSE);
+    
     /**
      * Parse a statement.
      * To be overridden by the specialized statement parser subclasses.
@@ -62,14 +76,16 @@ public class StatementParser extends SubsetCParserTD
             }
 
             // An assignment statement begins with a variable's identifier.
-            case FLOAT:
-            case INT:
             case IDENTIFIER: {
-                AssignmentStatementParser assignmentParser =
-                    new AssignmentStatementParser(this);
-                statementNode = assignmentParser.parse(token);
-                break;
-            }
+            	if (symTabStack.lookup(token.getText()).getDefinition() == DefinitionImpl.TYPE) {
+            		DeclarationsParser declarationsParser = new DeclarationsParser(this);
+            		declarationsParser.parse(token);
+            	} else {
+            		AssignmentStatementParser assignmentParser = new AssignmentStatementParser(this);
+            		statementNode = assignmentParser.parse(token);
+            	}
+            	break;
+		}
 
             default: {
                 statementNode = ICodeFactory.createICodeNode(NO_OP);

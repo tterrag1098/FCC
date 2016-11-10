@@ -1,11 +1,10 @@
 package wci.frontend.subsetc;
 
 import static wci.frontend.subsetc.SubsetCErrorCode.IO_ERROR;
-import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_PERIOD;
 import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
-import static wci.frontend.subsetc.SubsetCTokenType.LEFT_BRACE;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ICODE;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_SYMTAB;
+import static wci.message.MessageType.PARSER_SUMMARY;
 
 import java.util.EnumSet;
 
@@ -18,10 +17,9 @@ import wci.intermediate.ICode;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
 import wci.intermediate.SymTabEntry;
+import wci.intermediate.subsetc.CPredefined;
 import wci.intermediate.symtabimpl.DefinitionImpl;
-import wci.intermediate.symtabimpl.Predefined;
 import wci.message.Message;
-import static wci.message.MessageType.PARSER_SUMMARY;
 
 /**
  * <h1>PascalParserTD</h1>
@@ -66,7 +64,7 @@ public class SubsetCParserTD extends Parser
         long startTime = System.currentTimeMillis();
 
         ICode iCode = ICodeFactory.createICode();
-        Predefined.initialize(symTabStack);
+        CPredefined.initialize(symTabStack);
 
         // Create a dummy program identifier symbol table entry.
         routineId = symTabStack.enterLocal("DummyProgramName".toLowerCase());

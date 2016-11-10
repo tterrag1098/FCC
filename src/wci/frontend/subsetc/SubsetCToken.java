@@ -22,4 +22,9 @@ public class SubsetCToken extends Token
     {
         super(source);
     }
+    
+    @Override
+    public String toString() {
+    	return String.valueOf(type) + ": " + text;
+    }
 }
