@@ -2,9 +2,9 @@
 
 int foo;
 
-//int main() 
-{	
-	int i;
+//int main()
+{
+	int i, j, k;
 	i = 0;
 	int abc;
 	abc = 10;
@@ -19,7 +19,7 @@ int foo;
 		}
 		// Simple if, single statement
 		if (abc >= 2) i = i - 1;
-		
+
 		// Sync test
 		/*
 		if ((gibberish*#*(758iusdhf()
