@@ -6,11 +6,13 @@ int foo;
 {
 	int i, j, k;
 	i = 0;
+	x = 1;
 	int abc;
 	abc = 10;
 	// Compound expression
 	while (true)
 	{
+		int bar;
 		i = i + 1;
 		// Simple if, compound statement
 		if (abc > 4)

@@ -102,9 +102,6 @@ public class VariableDeclarationParser extends DeclarationsParser
     // Synchronization set to follow a sublist identifier.
     private static final EnumSet<SubsetCTokenType> IDENTIFIER_FOLLOW_SET =
         EnumSet.of(COLON, SEMICOLON);
-    static {
-        IDENTIFIER_FOLLOW_SET.addAll(DeclarationsParser.VAR_START_SET);
-    }
 
     // Synchronization set for the , token.
     private static final EnumSet<SubsetCTokenType> COMMA_SET =
@@ -136,9 +133,9 @@ public class VariableDeclarationParser extends DeclarationsParser
             if (tokenType == COMMA) {
                 token = nextToken();  // consume the comma
 
-//                if (IDENTIFIER_FOLLOW_SET.contains(token.getType())) {
-//                    errorHandler.flag(token, MISSING_IDENTIFIER, this);
-//                }
+                if (IDENTIFIER_FOLLOW_SET.contains(token.getType())) {
+                    errorHandler.flag(token, MISSING_IDENTIFIER, this);
+                }
             }
             else if (IDENTIFIER_START_SET.contains(tokenType)) {
                 errorHandler.flag(token, MISSING_COMMA, this);

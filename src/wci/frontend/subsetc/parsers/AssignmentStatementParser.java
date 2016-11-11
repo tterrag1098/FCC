@@ -46,23 +46,16 @@ public class AssignmentStatementParser extends StatementParser
     {
         // Create the ASSIGN node.
         ICodeNode assignNode = ICodeFactory.createICodeNode(ASSIGN);
-        
-        if (token.getType() == FLOAT || token.getType() == INT) {
-        	Token type = token;
-        	token = nextToken();
-        	if (symTabStack.lookup(token.getText().toLowerCase()) == null) {
-        		errorHandler.flag(token, SubsetCErrorCode.IDENTIFIER_UNDEFINED, this);
-        	}
-        }
 
         // Look up the target identifer in the symbol table stack.
         // Enter the identifier into the table if it's not found.
-        String targetName = token.getText().toLowerCase();
+        String targetName = token.getText();
         SymTabEntry targetId = symTabStack.lookup(targetName);
-        if (targetId == null) {
-            targetId = symTabStack.enterLocal(targetName);
+        if (targetId != null) {
+            targetId.appendLineNumber(token.getLineNumber());
+        } else {
+        	errorHandler.flag(token, SubsetCErrorCode.IDENTIFIER_UNDEFINED, this);
         }
-        targetId.appendLineNumber(token.getLineNumber());
 
         token = nextToken();  // consume the identifier token
 

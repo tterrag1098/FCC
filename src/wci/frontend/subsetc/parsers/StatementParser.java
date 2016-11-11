@@ -18,6 +18,7 @@ import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
+import wci.intermediate.SymTabEntry;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 
 /**
@@ -77,7 +78,8 @@ public class StatementParser extends SubsetCParserTD
 
             // An assignment statement begins with a variable's identifier.
             case IDENTIFIER: {
-            	if (symTabStack.lookup(token.getText()).getDefinition() == DefinitionImpl.TYPE) {
+            	SymTabEntry entry = symTabStack.lookup(token.getText());
+            	if (entry != null && entry.getDefinition() == DefinitionImpl.TYPE) {
             		DeclarationsParser declarationsParser = new DeclarationsParser(this);
             		declarationsParser.parse(token);
             	} else {
