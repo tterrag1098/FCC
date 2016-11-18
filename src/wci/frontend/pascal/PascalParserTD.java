@@ -27,8 +27,6 @@ public class PascalParserTD extends Parser
 {
     protected static PascalErrorHandler errorHandler = new PascalErrorHandler();
 
-    private SymTabEntry routineId;  // name of the routine being parsed
-
     /**
      * Constructor.
      * @param scanner the scanner to be used with this parser.
@@ -49,15 +47,6 @@ public class PascalParserTD extends Parser
 
     /**
      * Getter.
-     * @return the routine identifier's symbol table entry.
-     */
-    public SymTabEntry getRoutineId()
-    {
-        return routineId;
-    }
-
-    /**
-     * Getter.
      * @return the error handler.
      */
     public PascalErrorHandler getErrorHandler()
@@ -74,35 +63,14 @@ public class PascalParserTD extends Parser
         throws Exception
     {
         long startTime = System.currentTimeMillis();
-
-        ICode iCode = ICodeFactory.createICode();
         Predefined.initialize(symTabStack);
-
-        // Create a dummy program identifier symbol table entry.
-        routineId = symTabStack.enterLocal("DummyProgramName".toLowerCase());
-        routineId.setDefinition(DefinitionImpl.PROGRAM);
-        symTabStack.setProgramId(routineId);
-
-        // Push a new symbol table onto the symbol table stack and set
-        // the routine's symbol table and intermediate code.
-        routineId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
-        routineId.setAttribute(ROUTINE_ICODE, iCode);
-
-        BlockParser blockParser = new BlockParser(this);
 
         try {
             Token token = nextToken();
 
-            // Parse a block.
-            ICodeNode rootNode = blockParser.parse(token, routineId);
-            iCode.setRoot(rootNode);
-            symTabStack.pop();
-
-            // Look for the final period.
-            token = currentToken();
-            if (token.getType() != DOT) {
-                errorHandler.flag(token, MISSING_PERIOD, this);
-            }
+            // Parse a program.
+            ProgramParser programParser = new ProgramParser(this);
+            programParser.parse(token, null);
             token = currentToken();
 
             // Send the parser summary message.

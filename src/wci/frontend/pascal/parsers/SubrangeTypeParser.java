@@ -12,14 +12,6 @@ import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.typeimpl.TypeFormImpl.*;
 import static wci.intermediate.typeimpl.TypeKeyImpl.*;
 
-/**
- * <h1>SubrangeTypeParser</h1>
- *
- * <p>Parse a Pascal subrange type specification.</p>
- *
- * <p>Copyright (c) 2009 by Ronald Mak</p>
- * <p>For instructional purposes only.  No warranties.</p>
- */
 public class SubrangeTypeParser extends TypeSpecificationParser
 {
     /**

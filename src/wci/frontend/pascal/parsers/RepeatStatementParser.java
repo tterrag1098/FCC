@@ -3,11 +3,12 @@ package wci.frontend.pascal.parsers;
 import wci.frontend.*;
 import wci.frontend.pascal.*;
 import wci.intermediate.*;
+import wci.intermediate.symtabimpl.*;
+import wci.intermediate.typeimpl.*;
 
 import static wci.frontend.pascal.PascalTokenType.*;
 import static wci.frontend.pascal.PascalErrorCode.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
-import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
 /**
  * <h1>RepeatStatementParser</h1>
@@ -51,10 +52,17 @@ public class RepeatStatementParser extends StatementParser
 
         // Parse the expression.
         // The TEST node adopts the expression subtree as its only child.
-        // The LOOP node adopts the TEST node.
         ExpressionParser expressionParser = new ExpressionParser(this);
-        testNode.addChild(expressionParser.parse(token));
+        ICodeNode exprNode = expressionParser.parse(token);
+        testNode.addChild(exprNode);
         loopNode.addChild(testNode);
+
+        // Type check: The test expression must be boolean.
+        TypeSpec exprType = exprNode != null ? exprNode.getTypeSpec()
+                                             : Predefined.undefinedType;
+        if (!TypeChecker.isBoolean(exprType)) {
+            errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
+        }
 
         return loopNode;
     }
