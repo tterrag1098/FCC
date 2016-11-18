@@ -20,6 +20,7 @@ import wci.intermediate.SymTabEntry;
 import wci.intermediate.subsetc.CPredefined;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 import wci.message.Message;
+import wci.message.MessageType;
 
 /**
  * <h1>PascalParserTD</h1>
@@ -32,7 +33,8 @@ import wci.message.Message;
 public class SubsetCParserTD extends Parser
 {
     protected static SubsetCErrorHandler errorHandler = new SubsetCErrorHandler();
-
+    protected static StringBuilder nestedStacks = new StringBuilder();
+    
     private SymTabEntry routineId;  // name of the routine being parsed
 
     /**
@@ -98,6 +100,8 @@ public class SubsetCParserTD extends Parser
         catch (java.io.IOException ex) {
             errorHandler.abortTranslation(IO_ERROR, this);
         }
+        
+        System.out.println(nestedStacks.toString());
     }
 
     /**

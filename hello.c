@@ -6,7 +6,7 @@ int foo;
 {
 	int i, j, k;
 	i = 0;
-	x = 1;
+	//x = 1;
 	int abc;
 	abc = 10;
 	// Compound expression
@@ -17,10 +17,11 @@ int foo;
 		// Simple if, compound statement
 		if (abc > 4)
 		{
+			int baz;
 			abc = i * (abc - 1);
 		}
 		// Simple if, single statement
-		if (abc >= 2) i = i - 1;
+		if (abc >= 2) { int q; q = i - 1; }
 
 		// Sync test
 		/*

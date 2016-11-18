@@ -97,7 +97,7 @@ public class CrossReferencer
      * @param symTab the symbol table.
      * @param recordTypes the list to fill with RECORD type specifications.
      */
-    private void printSymTab(SymTab symTab, ArrayList<TypeSpec> recordTypes)
+    public void printSymTab(SymTab symTab, ArrayList<TypeSpec> recordTypes)
     {
         // Loop over the sorted list of symbol table entries.
         ArrayList<SymTabEntry> sorted = symTab.sortedEntries();

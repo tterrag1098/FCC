@@ -3,11 +3,17 @@ package wci.frontend.subsetc.parsers;
 import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_END;
 import static wci.frontend.subsetc.SubsetCTokenType.RIGHT_BRACE;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.COMPOUND;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+
 import wci.frontend.Token;
 import wci.frontend.pascal.PascalTokenType;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
+import wci.util.CrossReferencer;
 
 /**
  * <h1>CompoundStatementParser</h1>
@@ -41,11 +47,34 @@ public class CompoundStatementParser extends StatementParser
 
         // Create the COMPOUND node.
         ICodeNode compoundNode = ICodeFactory.createICodeNode(COMPOUND);
-
+        symTabStack.push();
+        
         // Parse the statement list terminated by the END token.
         StatementParser statementParser = new StatementParser(this);
         statementParser.parseList(token, compoundNode, RIGHT_BRACE, MISSING_END);
 
+        CrossReferencer cr = new CrossReferencer();
+        PrintStream replace = new PrintStream(System.out) {
+        	@Override
+        	public void println(String x) {
+        		nestedStacks.append(x + "\n");
+        	}
+        	
+        	public void print(String s) {
+        		nestedStacks.append(s);
+        	}
+        	
+        	@Override
+        	public void println() {
+        		nestedStacks.append("\n");
+        	}
+        };
+        PrintStream replaced = System.out;
+        System.setOut(replace);
+        nestedStacks.append("\n=== NESTED SYMBOL TABLE ===\n\n");
+        cr.printSymTab(symTabStack.pop(), new ArrayList<>());
+        System.setOut(replaced);
+        nestedStacks.append("\n");
         return compoundNode;
     }
 }
