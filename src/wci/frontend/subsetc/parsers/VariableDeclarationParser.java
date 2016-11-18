@@ -7,7 +7,6 @@ import wci.frontend.*;
 import wci.frontend.subsetc.*;
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.*;
-
 import static wci.frontend.subsetc.SubsetCTokenType.*;
 import static wci.frontend.subsetc.SubsetCErrorCode.*;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
@@ -78,7 +77,7 @@ public class VariableDeclarationParser extends DeclarationsParser
         while (token.getType() != SEMICOLON && token.getType() == IDENTIFIER) {
 
             // Parse the identifier sublist and its type specification.
-            parseIdentifierSublist(type, token);
+            parseIdentifierSublist(token, type, IDENTIFIER_FOLLOW_SET, COMMA_SET);
             token = currentToken();
         }
         
@@ -110,10 +109,15 @@ public class VariableDeclarationParser extends DeclarationsParser
     /**
      * Parse a sublist of identifiers and their type specification.
      * @param token the current token.
+     * @param followSet the synchronization set to follow an identifier.
      * @return the sublist of identifiers in a declaration.
      * @throws Exception if an error occurred.
      */
-    protected ArrayList<SymTabEntry> parseIdentifierSublist(TypeSpec type, Token token)
+    protected ArrayList<SymTabEntry> parseIdentifierSublist(
+                                         Token token,
+                                         TypeSpec type,
+                                         EnumSet<SubsetCTokenType> followSet,
+                                         EnumSet<SubsetCTokenType> commaSet)
         throws Exception
     {
         ArrayList<SymTabEntry> sublist = new ArrayList<SymTabEntry>();
@@ -126,30 +130,33 @@ public class VariableDeclarationParser extends DeclarationsParser
                 sublist.add(id);
             }
 
-            token = synchronize(COMMA_SET);
+            token = synchronize(commaSet);
             TokenType tokenType = token.getType();
 
             // Look for the comma.
             if (tokenType == COMMA) {
                 token = nextToken();  // consume the comma
 
-                if (IDENTIFIER_FOLLOW_SET.contains(token.getType())) {
+                if (followSet.contains(token.getType())) {
                     errorHandler.flag(token, MISSING_IDENTIFIER, this);
                 }
             }
             else if (IDENTIFIER_START_SET.contains(tokenType)) {
                 errorHandler.flag(token, MISSING_COMMA, this);
             }
-        } while (!IDENTIFIER_FOLLOW_SET.contains(token.getType()));
+        } while (!followSet.contains(token.getType()));
 
-        // Assign the type specification to each identifier in the list.
-        for (SymTabEntry variableId : sublist) {
-            variableId.setTypeSpec(type);
+        if (definition != PROGRAM_PARM) {
+
+            // Assign the type specification to each identifier in the list.
+            for (SymTabEntry variableId : sublist) {
+                variableId.setTypeSpec(type);
+            }
         }
 
         return sublist;
     }
-
+    
     /**
      * Parse an identifier.
      * @param token the current token.

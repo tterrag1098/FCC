@@ -1,7 +1,9 @@
 package wci.frontend.subsetc.parsers;
 
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
+import static wci.frontend.subsetc.SubsetCTokenType.FLOAT;
+import static wci.frontend.subsetc.SubsetCTokenType.IDENTIFIER;
+import static wci.frontend.subsetc.SubsetCTokenType.INT;
+import static wci.frontend.subsetc.SubsetCTokenType.VOID;
 import static wci.intermediate.symtabimpl.DefinitionImpl.VARIABLE;
 
 import java.util.EnumSet;
@@ -9,6 +11,7 @@ import java.util.EnumSet;
 import wci.frontend.Token;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
+import wci.intermediate.SymTabEntry;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 
 /**
@@ -45,11 +48,11 @@ public class DeclarationsParser extends SubsetCParserTD
 //        VAR_START_SET.remove(TYPE);
 //    }
 
-//    static final EnumSet<SubsetCTokenType> ROUTINE_START_SET =
-//        VAR_START_SET.clone();
-//    static {
-//        ROUTINE_START_SET.remove(VAR);
-//    }
+    static final EnumSet<SubsetCTokenType> ROUTINE_START_SET =
+        VAR_START_SET.clone();
+    static {
+        ROUTINE_START_SET.add(VOID);
+    }
 
     /**
      * Parse declarations.
@@ -82,15 +85,20 @@ public class DeclarationsParser extends SubsetCParserTD
 
         token = synchronize(VAR_START_SET);
 
-        while (VAR_START_SET.contains(token.getType()) && symTabStack.lookup(token.getText()).getDefinition() == DefinitionImpl.TYPE) {
-            VariableDeclarationParser variableDeclarationsParser =
+        SymTabEntry entry = symTabStack.lookup(token.getText());
+        while (VAR_START_SET.contains(token.getType()) && entry != null && entry.getDefinition() == DefinitionImpl.TYPE) {
+            VariableDeclarationParser declarationParser =
                 new VariableDeclarationParser(this);
-            variableDeclarationsParser.setDefinition(VARIABLE);
-            variableDeclarationsParser.parse(token);
+            declarationParser.setDefinition(VARIABLE);
+            declarationParser.parse(token);
             
             token = currentToken();
         }
 
-//        token = synchronize(ROUTINE_START_SET);
+        token = synchronize(ROUTINE_START_SET);
+        if (token.getType() == VOID) {
+        	DeclaredRoutineParser routineParser = new DeclaredRoutineParser(this);
+        	routineParser.parse(token, 
+        }
     }
 }

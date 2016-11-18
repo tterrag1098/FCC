@@ -2,7 +2,7 @@
 
 int foo;
 
-//int main()
+void main()
 {
 	int i, j, k;
 	i = 0;
