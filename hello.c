@@ -2,7 +2,7 @@
 
 int foo;
 
-void main()
+int main()
 {
 	int i, j, k;
 	i = 0;
@@ -31,4 +31,13 @@ void main()
 		}
 		*/
 	}
+}
+
+void foobar()
+{
+	int x, y;
+	x = 4;
+	y = 3;
+	int z;
+	z = x * y;
 }

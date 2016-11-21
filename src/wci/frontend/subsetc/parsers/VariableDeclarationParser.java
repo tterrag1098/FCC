@@ -1,18 +1,20 @@
 package wci.frontend.subsetc.parsers;
 
+import static wci.frontend.subsetc.SubsetCErrorCode.*;
+import static wci.frontend.subsetc.SubsetCTokenType.*;
+import static wci.intermediate.symtabimpl.DefinitionImpl.PROGRAM_PARM;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
-import wci.frontend.*;
-import wci.frontend.subsetc.*;
-import wci.intermediate.*;
-import wci.intermediate.symtabimpl.*;
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
-import static wci.intermediate.symtabimpl.DefinitionImpl.*;
-import static wci.intermediate.typeimpl.TypeFormImpl.*;
-import static wci.intermediate.typeimpl.TypeKeyImpl.*;
+import wci.frontend.Token;
+import wci.frontend.TokenType;
+import wci.frontend.subsetc.SubsetCParserTD;
+import wci.frontend.subsetc.SubsetCTokenType;
+import wci.intermediate.Definition;
+import wci.intermediate.SymTabEntry;
+import wci.intermediate.TypeSpec;
 
 /**
  * <h1>VariableDeclarationsParser</h1>
@@ -65,12 +67,19 @@ public class VariableDeclarationParser extends DeclarationsParser
      * @param token the initial token.
      * @throws Exception if an error occurred.
      */
-    public void parse(Token token)
+    public SymTabEntry parse(Token token, SymTabEntry parentId)
         throws Exception
     {
         TypeSpec type = parseTypeSpec(token);
 
         token = synchronize(IDENTIFIER_SET);
+
+        Token peek = nextToken();
+        if (peek.getType() == LEFT_PAREN) {
+        	DeclaredRoutineParser routineParser = new DeclaredRoutineParser(this);
+        	routineParser.setReturnType(type);
+        	return routineParser.parse(token, parentId);
+        }
         
         // Loop to parse a sequence of variable declarations
         // separated by semicolons.
@@ -80,7 +89,7 @@ public class VariableDeclarationParser extends DeclarationsParser
             parseIdentifierSublist(token, type, IDENTIFIER_FOLLOW_SET, COMMA_SET);
             token = currentToken();
         }
-        
+
         // Look for one or more semicolons after a definition.
         if (token.getType() == SEMICOLON) {
             while (token.getType() == SEMICOLON) {
@@ -92,6 +101,8 @@ public class VariableDeclarationParser extends DeclarationsParser
         else {
             errorHandler.flag(token, MISSING_SEMICOLON, this);
         }
+        
+        return parentId;
     }
 
     // Synchronization set to start a sublist identifier.
@@ -104,7 +115,7 @@ public class VariableDeclarationParser extends DeclarationsParser
 
     // Synchronization set for the , token.
     private static final EnumSet<SubsetCTokenType> COMMA_SET =
-        EnumSet.of(COMMA, COLON, IDENTIFIER, SEMICOLON);
+        EnumSet.of(COMMA, SEMICOLON);
 
     /**
      * Parse a sublist of identifiers and their type specification.
@@ -123,8 +134,10 @@ public class VariableDeclarationParser extends DeclarationsParser
         ArrayList<SymTabEntry> sublist = new ArrayList<SymTabEntry>();
 
         do {
-            token = synchronize(IDENTIFIER_START_SET);
+//            token = synchronize(IDENTIFIER_START_SET);
             SymTabEntry id = parseIdentifier(token);
+            token = currentToken();
+            if (token.getType() == IDENTIFIER) token = nextToken();
 
             if (id != null) {
                 sublist.add(id);
@@ -181,8 +194,6 @@ public class VariableDeclarationParser extends DeclarationsParser
             else {
                 errorHandler.flag(token, IDENTIFIER_REDEFINED, this);
             }
-
-            token = nextToken();   // consume the identifier token
         }
         else {
             errorHandler.flag(token, MISSING_IDENTIFIER, this);

@@ -13,6 +13,7 @@ import wci.frontend.pascal.PascalTokenType;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
+import wci.intermediate.SymTabEntry;
 import wci.util.CrossReferencer;
 
 /**
@@ -40,7 +41,7 @@ public class CompoundStatementParser extends StatementParser
      * @return the root node of the generated parse tree.
      * @throws Exception if an error occurred.
      */
-    public ICodeNode parse(Token token)
+    public ICodeNode parse(Token token, SymTabEntry parentId)
         throws Exception
     {
         token = nextToken();  // consume the BEGIN
@@ -51,7 +52,7 @@ public class CompoundStatementParser extends StatementParser
         
         // Parse the statement list terminated by the END token.
         StatementParser statementParser = new StatementParser(this);
-        statementParser.parseList(token, compoundNode, RIGHT_BRACE, MISSING_END);
+        statementParser.parseList(token, compoundNode, parentId, RIGHT_BRACE, MISSING_END);
 
         CrossReferencer cr = new CrossReferencer();
         PrintStream replace = new PrintStream(System.out) {

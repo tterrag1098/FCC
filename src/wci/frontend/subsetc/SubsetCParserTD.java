@@ -1,26 +1,23 @@
 package wci.frontend.subsetc;
 
-import static wci.frontend.subsetc.SubsetCErrorCode.IO_ERROR;
-import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ICODE;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_SYMTAB;
+import static wci.frontend.subsetc.SubsetCErrorCode.*;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.message.MessageType.PARSER_SUMMARY;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import wci.frontend.EofToken;
 import wci.frontend.Parser;
 import wci.frontend.Scanner;
 import wci.frontend.Token;
-import wci.frontend.subsetc.parsers.BlockParser;
+import wci.frontend.subsetc.parsers.ProgramParser;
 import wci.intermediate.ICode;
 import wci.intermediate.ICodeFactory;
-import wci.intermediate.ICodeNode;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.subsetc.CPredefined;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 import wci.message.Message;
-import wci.message.MessageType;
 
 /**
  * <h1>PascalParserTD</h1>
@@ -64,27 +61,54 @@ public class SubsetCParserTD extends Parser
         throws Exception
     {
         long startTime = System.currentTimeMillis();
-
-        ICode iCode = ICodeFactory.createICode();
         CPredefined.initialize(symTabStack);
 
-        // Create a dummy program identifier symbol table entry.
-        routineId = symTabStack.enterLocal("DummyProgramName".toLowerCase());
-        routineId.setDefinition(DefinitionImpl.PROGRAM);
-        symTabStack.setProgramId(routineId);
+        try {
+            Token token = nextToken();
+            
+            ICode iCode = ICodeFactory.createICode();
+            CPredefined.initialize(symTabStack);
 
-        // Push a new symbol table onto the symbol table stack and set
-        // the routine's symbol table and intermediate code.
-        routineId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
-        routineId.setAttribute(ROUTINE_ICODE, iCode);
+            // Create a dummy program identifier symbol table entry.
+            routineId = symTabStack.enterLocal("DummyProgramName".toLowerCase());
+            routineId.setDefinition(DefinitionImpl.PROGRAM);
+            symTabStack.setProgramId(routineId);
+
+            // Push a new symbol table onto the symbol table stack and set
+            // the routine's symbol table and intermediate code.
+            routineId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
+            routineId.setAttribute(ROUTINE_ICODE, iCode);
+            routineId.setAttribute(ROUTINE_ROUTINES, new ArrayList<>());
+
+            // Parse a program.
+            ProgramParser programParser = new ProgramParser(this);
+            programParser.parse(token, routineId);
+            token = currentToken();
+
+            // Send the parser summary message.
+            float elapsedTime = (System.currentTimeMillis() - startTime)/1000f;
+            System.out.println(nestedStacks);
+            sendMessage(new Message(PARSER_SUMMARY,
+                                    new Number[] {token.getLineNumber(),
+                                                  getErrorCount(),
+                                                  elapsedTime}));
+        }
+        catch (java.io.IOException ex) {
+            errorHandler.abortTranslation(IO_ERROR, this);
+        }
         
-        BlockParser blockParser = new BlockParser(this);
+        /*
+        long startTime = System.currentTimeMillis();
+
+        
+        
+        ProgramParser programParser = new ProgramParser(this);
 
         try {
             Token token = nextToken();
 
             // Parse a block.
-            ICodeNode rootNode = blockParser.parse(token, routineId);
+            ICodeNode rootNode = programParser.parse(token, routineId);
             iCode.setRoot(rootNode);
             symTabStack.pop();
 
@@ -102,6 +126,7 @@ public class SubsetCParserTD extends Parser
         }
         
         System.out.println(nestedStacks.toString());
+        */
     }
 
     /**

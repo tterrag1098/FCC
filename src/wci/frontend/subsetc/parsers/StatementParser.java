@@ -18,6 +18,7 @@ import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
+import wci.intermediate.SymTab;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 
@@ -52,10 +53,11 @@ public class StatementParser extends SubsetCParserTD
      * Parse a statement.
      * To be overridden by the specialized statement parser subclasses.
      * @param token the initial token.
+     * @param parentId 
      * @return the root node of the generated parse tree.
      * @throws Exception if an error occurred.
      */
-    public ICodeNode parse(Token token)
+    public ICodeNode parse(Token token, SymTabEntry parentId)
         throws Exception
     {
         ICodeNode statementNode = null;
@@ -65,14 +67,14 @@ public class StatementParser extends SubsetCParserTD
             case LEFT_BRACE: {
                 CompoundStatementParser compoundParser =
                     new CompoundStatementParser(this);
-                statementNode = compoundParser.parse(token);
+                statementNode = compoundParser.parse(token, parentId);
                 break;
             }
             
             case IF:
             case WHILE: {
             	ControlStatementParser controlParser = new ControlStatementParser(this);
-            	statementNode = controlParser.parse(token);
+            	statementNode = controlParser.parse(token, parentId);
             	break;
             }
 
@@ -80,8 +82,9 @@ public class StatementParser extends SubsetCParserTD
             case IDENTIFIER: {
             	SymTabEntry entry = symTabStack.lookup(token.getText());
             	if (entry != null && entry.getDefinition() == DefinitionImpl.TYPE) {
-            		DeclarationsParser declarationsParser = new DeclarationsParser(this);
-            		declarationsParser.parse(token);
+            		VariableDeclarationParser declarationParser = new VariableDeclarationParser(this);
+            		declarationParser.setDefinition(DefinitionImpl.VARIABLE);
+            		declarationParser.parse(token, parentId);
             	} else {
             		AssignmentStatementParser assignmentParser = new AssignmentStatementParser(this);
             		statementNode = assignmentParser.parse(token);
@@ -116,11 +119,13 @@ public class StatementParser extends SubsetCParserTD
      * Parse a statement list.
      * @param token the curent token.
      * @param parentNode the parent node of the statement list.
+     * @param routineId 
      * @param terminator the token type of the node that terminates the list.
      * @param errorCode the error code if the terminator token is missing.
      * @throws Exception if an error occurred.
      */
     protected void parseList(Token token, ICodeNode parentNode,
+                             SymTabEntry routineId, 
                              SubsetCTokenType terminator,
                              SubsetCErrorCode errorCode)
         throws Exception
@@ -131,7 +136,7 @@ public class StatementParser extends SubsetCParserTD
                (token.getType() != terminator)) {
 
             // Parse a statement.  The parent node adopts the statement node.
-            ICodeNode statementNode = parse(token);
+            ICodeNode statementNode = parse(token, routineId);
             parentNode.addChild(statementNode);
 
             token = currentToken();

@@ -1,19 +1,29 @@
 package wci.frontend.subsetc.parsers;
 
+import static wci.frontend.subsetc.SubsetCErrorCode.*;
+import static wci.frontend.subsetc.SubsetCTokenType.*;
+import static wci.intermediate.symtabimpl.DefinitionImpl.*;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.*;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import wci.frontend.*;
-import wci.frontend.subsetc.*;
-import wci.intermediate.*;
-import wci.intermediate.symtabimpl.*;
-import wci.intermediate.typeimpl.*;
-
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
-import static wci.intermediate.symtabimpl.DefinitionImpl.*;
-import static wci.intermediate.symtabimpl.RoutineCodeImpl.*;
+import wci.frontend.Token;
+import wci.frontend.TokenType;
+import wci.frontend.subsetc.SubsetCParserTD;
+import wci.frontend.subsetc.SubsetCTokenType;
+import wci.intermediate.Definition;
+import wci.intermediate.ICode;
+import wci.intermediate.ICodeFactory;
+import wci.intermediate.ICodeNode;
+import wci.intermediate.SymTab;
+import wci.intermediate.SymTabEntry;
+import wci.intermediate.TypeForm;
+import wci.intermediate.TypeSpec;
+import wci.intermediate.symtabimpl.DefinitionImpl;
+import wci.intermediate.symtabimpl.Predefined;
+import wci.intermediate.typeimpl.TypeFormImpl;
 
 /**
  * <h1>DeclaredRoutineParser</h1>
@@ -35,6 +45,12 @@ public class DeclaredRoutineParser extends DeclarationsParser
     }
 
     private static int dummyCounter = 0;  // counter for dummy routine names
+    
+    private TypeSpec returnType;
+    
+    public void setReturnType(TypeSpec type) {
+    	this.returnType = type;
+    }
 
     /**
      * Parse a standard subroutine declaration.
@@ -63,7 +79,6 @@ public class DeclaredRoutineParser extends DeclarationsParser
             }
 
             case IDENTIFIER: {
-                token = nextToken();  // consume FUNCTION
                 routineDefn = DefinitionImpl.FUNCTION;
                 dummyName = "DummyFunctionName_".toLowerCase() +
                             String.format("%03d", ++dummyCounter);
@@ -128,23 +143,8 @@ public class DeclaredRoutineParser extends DeclarationsParser
 
         // Look for the semicolon.
         token = currentToken();
-        if (token.getType() == SEMICOLON) {
-            do {
-                token = nextToken();  // consume ;
-            } while (token.getType() == SEMICOLON);
-        }
-        else {
-            errorHandler.flag(token, MISSING_SEMICOLON, this);
-        }
-
-        // Parse the routine's block or forward declaration.
-        if ((token.getType() == IDENTIFIER) &&
-            (token.getText().equalsIgnoreCase("forward")))
-        {
-            token = nextToken();  // consume forward
-            routineId.setAttribute(ROUTINE_CODE, FORWARD);
-        }
-        else {
+        if (token.getType() == LEFT_BRACE) {
+            
             routineId.setAttribute(ROUTINE_CODE, DECLARED);
 
             BlockParser blockParser = new BlockParser(this);
@@ -186,8 +186,8 @@ public class DeclaredRoutineParser extends DeclarationsParser
                 routineId = null;
                 errorHandler.flag(token, IDENTIFIER_REDEFINED, this);
             }
-
-            token = nextToken();  // consume routine name identifier
+            if (token == currentToken()) token = nextToken();
+            token = synchronize(EnumSet.of(LEFT_PAREN)); // consume routine name identifier
         }
         else {
             errorHandler.flag(token, MISSING_IDENTIFIER, this);
@@ -215,17 +215,18 @@ public class DeclaredRoutineParser extends DeclarationsParser
         token = currentToken();
 
         // If this is a function, parse and set its return type.
-        if (routineId.getDefinition() == DefinitionImpl.FUNCTION) {
-            VariableDeclarationParser variableDeclarationsParser =
-                new VariableDeclarationParser(this);
-            variableDeclarationsParser.setDefinition(DefinitionImpl.FUNCTION);
-            TypeSpec type = variableDeclarationsParser.parseTypeSpec(token);
+		if (routineId.getDefinition() == DefinitionImpl.FUNCTION) {
+			if (returnType == null) {
+				VariableDeclarationParser variableDeclarationsParser = new VariableDeclarationParser(this);
+				variableDeclarationsParser.setDefinition(DefinitionImpl.FUNCTION);
+				returnType = variableDeclarationsParser.parseTypeSpec(token);
+			}
 
             token = currentToken();
 
             // The return type cannot be an array or record.
-            if (type != null) {
-                TypeForm form = type.getForm();
+            if (returnType != null) {
+                TypeForm form = returnType.getForm();
                 if ((form == TypeFormImpl.ARRAY) ||
                     (form == TypeFormImpl.RECORD))
                 {
@@ -235,10 +236,10 @@ public class DeclaredRoutineParser extends DeclarationsParser
 
             // Missing return type.
             else {
-                type = Predefined.undefinedType;
+                returnType = Predefined.undefinedType;
             }
 
-            routineId.setTypeSpec(type);
+            routineId.setTypeSpec(returnType);
             token = currentToken();
         }
     }
@@ -315,10 +316,7 @@ public class DeclaredRoutineParser extends DeclarationsParser
 
     // Synchronization set for the , token.
     private static final EnumSet<SubsetCTokenType> COMMA_SET =
-        EnumSet.of(COMMA, COLON, IDENTIFIER, RIGHT_PAREN, SEMICOLON);
-    static {
-        COMMA_SET.addAll(DeclarationsParser.DECLARATION_START_SET);
-    }
+        EnumSet.of(COMMA, SEMICOLON);
 
     /**
      * Parse a sublist of formal parameter declarations.

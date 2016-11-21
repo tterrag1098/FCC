@@ -128,13 +128,14 @@ public class CrossReferencer
     {
         Definition definition = entry.getDefinition();
         int nestingLevel = entry.getSymTab().getNestingLevel();
-        System.out.println(INDENT + "Defined as: " + definition.getText());
+        System.out.println(INDENT + "Defined as: " + (definition == null ? "null" : definition.getText()));
         System.out.println(INDENT + "Scope nesting level: " + nestingLevel);
 
         // Print the type specification.
         TypeSpec type = entry.getTypeSpec();
         printType(type);
 
+        if (definition == null) return;
         switch ((DefinitionImpl) definition) {
 
             case CONSTANT: {

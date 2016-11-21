@@ -8,9 +8,11 @@ import static wci.intermediate.symtabimpl.DefinitionImpl.VARIABLE;
 
 import java.util.EnumSet;
 
+import wci.frontend.EofToken;
 import wci.frontend.Token;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
+import wci.intermediate.SymTab;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 
@@ -60,10 +62,11 @@ public class DeclarationsParser extends SubsetCParserTD
      * @param token the initial token.
      * @throws Exception if an error occurred.
      */
-    public void parse(Token token)
+    public SymTabEntry parse(Token token, SymTabEntry entry)
         throws Exception
     {
-        token = synchronize(DECLARATION_START_SET);
+    	do {
+    		token = synchronize(DECLARATION_START_SET);
 
 //        if (token.getType() == CONST) {
 //            token = nextToken();  // consume CONST
@@ -81,24 +84,25 @@ public class DeclarationsParser extends SubsetCParserTD
 //            TypeDefinitionsParser typeDefinitionsParser =
 //                new TypeDefinitionsParser(this);
 //            typeDefinitionsParser.parse(token);
-//        }
+			// }
 
-        token = synchronize(VAR_START_SET);
+			SymTabEntry varType = symTabStack.lookup(token.getText());
+			if (VAR_START_SET.contains(token.getType()) && varType != null
+					&& varType.getDefinition() == DefinitionImpl.TYPE) {
+				VariableDeclarationParser declarationParser = new VariableDeclarationParser(this);
+				declarationParser.setDefinition(VARIABLE);
+				declarationParser.parse(token, entry);
+			} else {
 
-        SymTabEntry entry = symTabStack.lookup(token.getText());
-        while (VAR_START_SET.contains(token.getType()) && entry != null && entry.getDefinition() == DefinitionImpl.TYPE) {
-            VariableDeclarationParser declarationParser =
-                new VariableDeclarationParser(this);
-            declarationParser.setDefinition(VARIABLE);
-            declarationParser.parse(token);
-            
-            token = currentToken();
-        }
+				token = synchronize(ROUTINE_START_SET);
+				
+				DeclaredRoutineParser routineParser = new DeclaredRoutineParser(this);
+				routineParser.parse(token, entry);
+			}
 
-        token = synchronize(ROUTINE_START_SET);
-        if (token.getType() == VOID) {
-        	DeclaredRoutineParser routineParser = new DeclaredRoutineParser(this);
-        	routineParser.parse(token, 
-        }
+			token = currentToken();
+    	} while (!(token instanceof EofToken));
+	        
+        return null;
     }
 }

@@ -1,16 +1,18 @@
 package wci.frontend.subsetc.parsers;
 
 import static wci.frontend.subsetc.SubsetCTokenType.*;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.LOOP;
+
 import java.util.EnumSet;
 
 import wci.frontend.Token;
 import wci.frontend.subsetc.SubsetCErrorCode;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
-import wci.intermediate.ICodeNode;
-import wci.intermediate.icodeimpl.ICodeNodeTypeImpl;
 import wci.intermediate.ICodeFactory;
-import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+import wci.intermediate.ICodeNode;
+import wci.intermediate.SymTabEntry;
+import wci.intermediate.icodeimpl.ICodeNodeTypeImpl;
 
 public class ControlStatementParser extends StatementParser {
 
@@ -19,7 +21,7 @@ public class ControlStatementParser extends StatementParser {
 	}
 	
 	@Override
-	public ICodeNode parse(Token token) throws Exception {
+	public ICodeNode parse(Token token, SymTabEntry parentId) throws Exception {
 		
 		ICodeNode controlNode = ICodeFactory.createICodeNode(token.getType() == SubsetCTokenType.WHILE ? LOOP : ICodeNodeTypeImpl.IF);
 
@@ -48,7 +50,7 @@ public class ControlStatementParser extends StatementParser {
 			parser = new StatementParser(this);
 		}
 		
-		controlNode.addChild(parser.parse(token));
+		controlNode.addChild(parser.parse(token, parentId));
 		return controlNode;
 	}
 
