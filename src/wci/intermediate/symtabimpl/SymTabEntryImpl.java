@@ -126,4 +126,9 @@ public class SymTabEntryImpl
     {
         return get(key);
     }
+    
+    @Override
+    public String toString() {
+    	return name + ": " + super.toString();
+    }
 }

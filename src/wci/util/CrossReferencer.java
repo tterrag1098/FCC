@@ -1,16 +1,29 @@
 package wci.util;
 
-import java.util.ArrayList;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.CONSTANT_VALUE;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_PARMS;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ROUTINES;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_SYMTAB;
+import static wci.intermediate.typeimpl.TypeKeyImpl.ARRAY_ELEMENT_COUNT;
+import static wci.intermediate.typeimpl.TypeKeyImpl.ARRAY_ELEMENT_TYPE;
+import static wci.intermediate.typeimpl.TypeKeyImpl.ARRAY_INDEX_TYPE;
+import static wci.intermediate.typeimpl.TypeKeyImpl.ENUMERATION_CONSTANTS;
+import static wci.intermediate.typeimpl.TypeKeyImpl.RECORD_SYMTAB;
+import static wci.intermediate.typeimpl.TypeKeyImpl.SUBRANGE_BASE_TYPE;
+import static wci.intermediate.typeimpl.TypeKeyImpl.SUBRANGE_MAX_VALUE;
+import static wci.intermediate.typeimpl.TypeKeyImpl.SUBRANGE_MIN_VALUE;
 
-import wci.intermediate.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import wci.intermediate.Definition;
+import wci.intermediate.SymTab;
+import wci.intermediate.SymTabEntry;
+import wci.intermediate.SymTabStack;
+import wci.intermediate.TypeForm;
+import wci.intermediate.TypeSpec;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 import wci.intermediate.typeimpl.TypeFormImpl;
-
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
-import static wci.intermediate.symtabimpl.DefinitionImpl.*;
-import static wci.intermediate.typeimpl.TypeFormImpl.*;
-import static wci.intermediate.typeimpl.TypeKeyImpl.*;
-import static wci.message.MessageType.*;
 
 /**
  * <h1>CrossReferencer</h1>
@@ -128,14 +141,27 @@ public class CrossReferencer
     {
         Definition definition = entry.getDefinition();
         int nestingLevel = entry.getSymTab().getNestingLevel();
-        System.out.println(INDENT + "Defined as: " + (definition == null ? "null" : definition.getText()));
+        System.out.println(INDENT + "Defined as: " + definition.getText());
         System.out.println(INDENT + "Scope nesting level: " + nestingLevel);
+        if (entry.getAttribute(ROUTINE_PARMS) != null) {
+        	StringBuilder sb = new StringBuilder(INDENT + "Parameters: (");
+        	List<SymTabEntry> parms = (List<SymTabEntry>) entry.getAttribute(ROUTINE_PARMS);
+        	for (SymTabEntry e : parms) {
+        		sb.append(e.getName() + " (" + e.getTypeSpec().getIdentifier().getName() + ")");
+        		sb.append(", ");
+        	}
+        	String s = sb.toString();
+        	if (!parms.isEmpty()) {
+        		s = s.substring(0, sb.length() - 2);
+        	}
+        	s += ")";
+        	System.out.println(s);
+        }
 
         // Print the type specification.
         TypeSpec type = entry.getTypeSpec();
         printType(type);
 
-        if (definition == null) return;
         switch ((DefinitionImpl) definition) {
 
             case CONSTANT: {

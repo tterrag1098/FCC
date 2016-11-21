@@ -316,7 +316,7 @@ public class DeclaredRoutineParser extends DeclarationsParser
 
     // Synchronization set for the , token.
     private static final EnumSet<SubsetCTokenType> COMMA_SET =
-        EnumSet.of(COMMA, SEMICOLON);
+        EnumSet.of(COMMA, SEMICOLON, RIGHT_PAREN);
 
     /**
      * Parse a sublist of formal parameter declarations.
@@ -353,6 +353,7 @@ public class DeclaredRoutineParser extends DeclarationsParser
             new VariableDeclarationParser(this);
         variableDeclarationsParser.setDefinition(parmDefn);
         TypeSpec type = variableDeclarationsParser.parseTypeSpec(token);
+        token = currentToken();
         ArrayList<SymTabEntry> sublist =
             variableDeclarationsParser.parseIdentifierSublist(
                                            token, type, PARAMETER_FOLLOW_SET,

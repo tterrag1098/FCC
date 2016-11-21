@@ -33,11 +33,11 @@ int main()
 	}
 }
 
-void foobar()
+void foobar(int test)
 {
 	int x, y;
 	x = 4;
 	y = 3;
 	int z;
-	z = x * y;
+	z = x * y + test;
 }

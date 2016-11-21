@@ -115,7 +115,7 @@ public class VariableDeclarationParser extends DeclarationsParser
 
     // Synchronization set for the , token.
     private static final EnumSet<SubsetCTokenType> COMMA_SET =
-        EnumSet.of(COMMA, SEMICOLON);
+        EnumSet.of(COMMA, SEMICOLON, RIGHT_PAREN);
 
     /**
      * Parse a sublist of identifiers and their type specification.
