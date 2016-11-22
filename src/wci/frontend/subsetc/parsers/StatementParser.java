@@ -6,8 +6,8 @@ import static wci.frontend.subsetc.SubsetCTokenType.IDENTIFIER;
 import static wci.frontend.subsetc.SubsetCTokenType.INT;
 import static wci.frontend.subsetc.SubsetCTokenType.SEMICOLON;
 import static wci.frontend.subsetc.SubsetCTokenType.WHILE;
-import static wci.intermediate.icodeimpl.ICodeKeyImpl.LINE;
-import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.NO_OP;
+import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
 
 import java.util.EnumSet;
 
@@ -21,6 +21,7 @@ import wci.intermediate.ICodeNode;
 import wci.intermediate.SymTab;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.symtabimpl.DefinitionImpl;
+import wci.intermediate.symtabimpl.SymTabKeyImpl;
 
 /**
  * <h1>StatementParser</h1>
@@ -90,7 +91,29 @@ public class StatementParser extends SubsetCParserTD
             		statementNode = assignmentParser.parse(token);
             	}
             	break;
-		}
+            }
+            
+            case RETURN: {
+                ICodeNode assignNode = ICodeFactory.createICodeNode(ASSIGN);
+            	SymTabEntry targetId = symTabStack.enterLocal(parentId.getName());
+            	targetId.setDefinition(DefinitionImpl.VARIABLE);
+            	targetId.setTypeSpec(parentId.getTypeSpec());
+
+                // Create the variable node and set its name attribute.
+                ICodeNode variableNode = ICodeFactory.createICodeNode(VARIABLE);
+                variableNode.setAttribute(ID, targetId);
+
+                // The ASSIGN node adopts the variable node as its first child.
+                assignNode.addChild(variableNode);
+                
+            	ExpressionParser expressionParser = new ExpressionParser(this);
+            	token = nextToken(); // Consume RETURN
+                assignNode.addChild(expressionParser.parse(token));
+                
+                statementNode = assignNode;
+                token = nextToken(); // Consume semicolon
+                break;
+            }
 
             default: {
                 statementNode = ICodeFactory.createICodeNode(NO_OP);
@@ -140,7 +163,7 @@ public class StatementParser extends SubsetCParserTD
             parentNode.addChild(statementNode);
 
             token = currentToken();
-     }
+        }
 
         // Look for the terminator token.
         if (token.getType() == terminator) {

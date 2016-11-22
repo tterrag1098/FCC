@@ -31,6 +31,8 @@ int main()
 		}
 		*/
 	}
+	
+	return i;
 }
 
 void foobar(int test)

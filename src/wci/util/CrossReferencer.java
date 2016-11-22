@@ -141,6 +141,10 @@ public class CrossReferencer
     {
         Definition definition = entry.getDefinition();
         int nestingLevel = entry.getSymTab().getNestingLevel();
+        if (definition == null) {
+        	System.out.println(entry);
+        	return;
+        }
         System.out.println(INDENT + "Defined as: " + definition.getText());
         System.out.println(INDENT + "Scope nesting level: " + nestingLevel);
         if (entry.getAttribute(ROUTINE_PARMS) != null) {
