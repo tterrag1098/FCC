@@ -290,7 +290,7 @@ public class DeclaredRoutineParser extends DeclarationsParser
 
             // Loop to parse sublists of formal parameter declarations.
             while ((tokenType == IDENTIFIER)) {
-                parms.addAll(parseParmSublist(token, routineId));
+                parms.add(parseParm(token, routineId));
                 token = currentToken();
                 tokenType = token.getType();
             }
@@ -325,12 +325,10 @@ public class DeclaredRoutineParser extends DeclarationsParser
      * @return the sublist of symbol table entries for the parm identifiers.
      * @throws Exception if an error occurred.
      */
-    private ArrayList<SymTabEntry> parseParmSublist(Token token,
+    private SymTabEntry parseParm(Token token,
                                                     SymTabEntry routineId)
         throws Exception
     {
-        boolean isProgram = routineId.getDefinition() == DefinitionImpl.PROGRAM;
-        Definition parmDefn = isProgram ? PROGRAM_PARM : null;
         TokenType tokenType = token.getType();
 
         // VAR or value parameter?
@@ -345,40 +343,26 @@ public class DeclaredRoutineParser extends DeclarationsParser
 //            token = nextToken();  // consume VAR
 //        }
 //        else if (!isProgram) {
-            parmDefn = VALUE_PARM;
+//            parmDefn = VALUE_PARM;
 //        }
 
         // Parse the parameter sublist and its type specification.
         VariableDeclarationParser variableDeclarationsParser =
             new VariableDeclarationParser(this);
-        variableDeclarationsParser.setDefinition(parmDefn);
+        variableDeclarationsParser.setDefinition(VALUE_PARM);
         TypeSpec type = variableDeclarationsParser.parseTypeSpec(token);
         token = currentToken();
-        ArrayList<SymTabEntry> sublist =
-            variableDeclarationsParser.parseIdentifierSublist(
-                                           token, type, PARAMETER_FOLLOW_SET,
-                                           COMMA_SET);
-        token = currentToken();
+        SymTabEntry parm = variableDeclarationsParser.parseIdentifier(token);
+        parm.setTypeSpec(type);
+        
+        token = nextToken();
         tokenType = token.getType();
 
-        if (!isProgram) {
-
-            // Look for one or more semicolons after a sublist.
-            if (tokenType == SEMICOLON) {
-                while (token.getType() == SEMICOLON) {
-                    token = nextToken();  // consume the ;
-                }
-            }
-
-            // If at the start of the next sublist, then missing a semicolon.
-            else if (VariableDeclarationParser.
-                         NEXT_START_SET.contains(tokenType)) {
-                errorHandler.flag(token, MISSING_SEMICOLON, this);
-            }
-
-            token = synchronize(PARAMETER_SET);
+        token = synchronize(COMMA_SET);
+        if (token.getType() == COMMA) {
+        	token = nextToken(); // Consume commma
         }
 
-        return sublist;
+        return parm;
     }
 }

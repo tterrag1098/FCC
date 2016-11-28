@@ -8,6 +8,16 @@ int adder(int num)
 	return 1;
 }
 
+int foobar(int test, float test2)
+{
+	int x, y;
+	x = 4;
+	y = 3;
+	int z;
+	z = x * y + test;
+	return z;
+}
+
 int main()
 {
 	int i, j, k;
@@ -38,18 +48,16 @@ int main()
 		*/
 	}
 
+	float f;
+	f = 0.3;
+	
 	int rval;
-	adder(abc);
+	rval = adder(); // Error
+	rval = adder(abc); // OK
+	rval = foobar(abc); // Error
+	rval = foobar(abc, i); // OK
+	rval = foobar(f, abc); // Error
 
 	return i;
-}
-
-void foobar(int test)
-{
-	int x, y;
-	x = 4;
-	y = 3;
-	int z;
-	z = x * y + test;
 }
 

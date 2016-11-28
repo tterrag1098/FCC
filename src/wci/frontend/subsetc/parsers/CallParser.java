@@ -1,23 +1,30 @@
 package wci.frontend.subsetc.parsers;
 
+import static wci.frontend.subsetc.SubsetCErrorCode.*;
+import static wci.frontend.subsetc.SubsetCTokenType.*;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+import static wci.intermediate.symtabimpl.DefinitionImpl.VAR_PARM;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
+import static wci.intermediate.typeimpl.TypeFormImpl.*;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import wci.frontend.*;
-import wci.frontend.subsetc.*;
-import wci.intermediate.*;
-import wci.intermediate.symtabimpl.*;
-import wci.intermediate.icodeimpl.*;
-import wci.intermediate.typeimpl.*;
-
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
-import static wci.intermediate.symtabimpl.DefinitionImpl.*;
-import static wci.intermediate.symtabimpl.RoutineCodeImpl.*;
-import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
-import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
-import static wci.intermediate.typeimpl.TypeFormImpl.*;
+import wci.frontend.Token;
+import wci.frontend.TokenType;
+import wci.frontend.subsetc.SubsetCParserTD;
+import wci.frontend.subsetc.SubsetCTokenType;
+import wci.intermediate.Definition;
+import wci.intermediate.ICodeFactory;
+import wci.intermediate.ICodeNode;
+import wci.intermediate.RoutineCode;
+import wci.intermediate.SymTabEntry;
+import wci.intermediate.TypeForm;
+import wci.intermediate.TypeSpec;
+import wci.intermediate.icodeimpl.ICodeKeyImpl;
+import wci.intermediate.icodeimpl.ICodeNodeTypeImpl;
+import wci.intermediate.subsetc.CTypeChecker;
+import wci.intermediate.symtabimpl.Predefined;
 
 /**
  * <h1>CallParser</h1>
@@ -213,7 +220,7 @@ public class CallParser extends StatementParser
 
         // Value parameter: The actual parameter must be assignment-compatible
         //                  with the formal parameter.
-        else if (!TypeChecker.areAssignmentCompatible(formalType, actualType)) {
+        else if (!CTypeChecker.areAssignmentCompatible(formalType, actualType)) {
             errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
         }
     }

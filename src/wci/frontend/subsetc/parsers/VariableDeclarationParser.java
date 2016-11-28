@@ -176,7 +176,7 @@ public class VariableDeclarationParser extends DeclarationsParser
      * @return the symbol table entry of the identifier.
      * @throws Exception if an error occurred.
      */
-    private SymTabEntry parseIdentifier(Token token)
+    public SymTabEntry parseIdentifier(Token token)
         throws Exception
     {
         SymTabEntry id = null;

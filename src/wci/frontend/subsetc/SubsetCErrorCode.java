@@ -17,6 +17,7 @@ public enum SubsetCErrorCode
     INCOMPATIBLE_ASSIGNMENT("Incompatible assignment"),
     INCOMPATIBLE_TYPES("Incompatible types"),
     INVALID_ASSIGNMENT("Invalid assignment statement"),
+    INVALID_ASSIGMENT_VOID("Cannot assign the result of a void function"),
     INVALID_CHARACTER("Invalid character"),
     INVALID_CONSTANT("Invalid constant"),
     INVALID_EXPONENT("Invalid exponent"),
