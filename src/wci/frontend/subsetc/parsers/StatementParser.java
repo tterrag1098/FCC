@@ -82,11 +82,20 @@ public class StatementParser extends SubsetCParserTD
             // An assignment statement begins with a variable's identifier.
             case IDENTIFIER: {
             	SymTabEntry entry = symTabStack.lookup(token.getText());
-            	if (entry != null && entry.getDefinition() == DefinitionImpl.TYPE) {
+            	if (entry == null) break;
+            	switch((DefinitionImpl) entry.getDefinition()) {
+            	case TYPE:
             		VariableDeclarationParser declarationParser = new VariableDeclarationParser(this);
             		declarationParser.setDefinition(DefinitionImpl.VARIABLE);
             		declarationParser.parse(token, parentId);
-            	} else {
+            		break;
+            	case FUNCTION:
+            	case PROCEDURE:
+            		// Call parsing
+            		CallParser callParser = new CallParser(this);
+            	    statementNode = callParser.parse(token);
+            		break;
+            	default:
             		AssignmentStatementParser assignmentParser = new AssignmentStatementParser(this);
             		statementNode = assignmentParser.parse(token);
             	}
@@ -119,6 +128,10 @@ public class StatementParser extends SubsetCParserTD
                 statementNode = ICodeFactory.createICodeNode(NO_OP);
                 break;
             }
+        }
+        
+        if (currentToken().getType() == SEMICOLON) {
+        	token = nextToken();
         }
 
         // Set the current line number as an attribute.

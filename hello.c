@@ -2,6 +2,12 @@
 
 int foo;
 
+
+int adder(int num)
+{
+	return 1;
+}
+
 int main()
 {
 	int i, j, k;
@@ -31,7 +37,10 @@ int main()
 		}
 		*/
 	}
-	
+
+	int rval;
+	adder(abc);
+
 	return i;
 }
 
@@ -43,3 +52,4 @@ void foobar(int test)
 	int z;
 	z = x * y + test;
 }
+

@@ -1,10 +1,11 @@
 package wci.frontend.subsetc.parsers;
 
+
 import static wci.frontend.subsetc.SubsetCErrorCode.IDENTIFIER_UNDEFINED;
 import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_RIGHT_PAREN;
 import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
 import static wci.frontend.subsetc.SubsetCTokenType.EQUALS;
-import static wci.frontend.subsetc.SubsetCTokenType.GREATER_EQUALS;
+import static wci.frontend.subsetc.SubsetCTokenType.*;
 import static wci.frontend.subsetc.SubsetCTokenType.GREATER_THAN;
 import static wci.frontend.subsetc.SubsetCTokenType.LESS_EQUALS;
 import static wci.frontend.subsetc.SubsetCTokenType.LESS_THAN;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 
 import wci.frontend.Token;
 import wci.frontend.TokenType;
+import wci.frontend.pascal.PascalTokenType;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.ICodeFactory;
@@ -78,6 +80,10 @@ public class ExpressionParser extends StatementParser
         return parseExpression(token);
     }
 
+    // Synchronization set for starting an expression.
+    static final EnumSet<SubsetCTokenType> EXPR_START_SET =
+        EnumSet.of(PLUS, MINUS, IDENTIFIER, STRING, LEFT_PAREN);
+    
     // Set of relational operators.
     private static final EnumSet<SubsetCTokenType> REL_OPS =
         EnumSet.of(EQUALS, NOT_EQUALS, LESS_THAN, LESS_EQUALS,
@@ -276,7 +282,7 @@ public class ExpressionParser extends StatementParser
             case IDENTIFIER: {
                 // Look up the identifier in the symbol table stack.
                 // Flag the identifier as undefined if it's not found.
-                String name = token.getText().toLowerCase();
+                String name = token.getText();
                 SymTabEntry id = symTabStack.lookup(name);
                 if (id == null) {
                     errorHandler.flag(token, IDENTIFIER_UNDEFINED, this);
