@@ -18,6 +18,11 @@ int foobar(int test, float test2)
 	return z;
 }
 
+void proc()
+{
+	foo = 1;
+}
+
 int main()
 {
 	int i, j, k;
@@ -52,11 +57,12 @@ int main()
 	f = 0.3;
 	
 	int rval;
-	rval = adder(); // Error
+//	rval = adder(); // Error (not enough params)
 	rval = adder(abc); // OK
-	rval = foobar(abc); // Error
+//	rval = foobar(abc); // Error (not enough params)
 	rval = foobar(abc, i); // OK
-	rval = foobar(f, abc); // Error
+//	rval = foobar(f, abc); // Error (invalid param types)
+//  rval = proc(); // Error (cannot assign to procedure)
 
 	return i;
 }

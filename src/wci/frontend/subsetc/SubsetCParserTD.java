@@ -1,7 +1,10 @@
 package wci.frontend.subsetc;
 
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
+import static wci.frontend.subsetc.SubsetCErrorCode.IO_ERROR;
+import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ICODE;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ROUTINES;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_SYMTAB;
 import static wci.message.MessageType.PARSER_SUMMARY;
 
 import java.util.ArrayList;
@@ -15,8 +18,8 @@ import wci.frontend.subsetc.parsers.ProgramParser;
 import wci.intermediate.ICode;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.SymTabEntry;
-import wci.intermediate.subsetc.CPredefined;
 import wci.intermediate.symtabimpl.DefinitionImpl;
+import wci.intermediate.symtabimpl.Predefined;
 import wci.message.Message;
 
 /**
@@ -61,13 +64,12 @@ public class SubsetCParserTD extends Parser
         throws Exception
     {
         long startTime = System.currentTimeMillis();
-        CPredefined.initialize(symTabStack);
+        Predefined.initialize(symTabStack, this);
 
         try {
             Token token = nextToken();
             
             ICode iCode = ICodeFactory.createICode();
-            CPredefined.initialize(symTabStack);
 
             // Create a dummy program identifier symbol table entry.
             routineId = symTabStack.enterLocal("DummyProgramName".toLowerCase());

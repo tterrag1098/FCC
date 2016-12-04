@@ -1,15 +1,44 @@
 package wci.intermediate.symtabimpl;
 
+import static wci.intermediate.symtabimpl.DefinitionImpl.FUNCTION;
+import static wci.intermediate.symtabimpl.DefinitionImpl.PROCEDURE;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.ABS;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.ARCTAN;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.CHR;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.COS;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.EOF;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.EOLN;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.EXP;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.LN;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.ODD;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.ORD;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.PRED;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.READ;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.READLN;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.ROUND;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.SIN;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.SQR;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.SQRT;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.SUCC;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.TRUNC;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.WRITE;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.WRITELN;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.CONSTANT_VALUE;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_CODE;
+import static wci.intermediate.typeimpl.TypeFormImpl.ENUMERATION;
+import static wci.intermediate.typeimpl.TypeFormImpl.SCALAR;
+import static wci.intermediate.typeimpl.TypeKeyImpl.ENUMERATION_CONSTANTS;
+
 import java.util.ArrayList;
 
-import wci.intermediate.*;
-import wci.intermediate.symtabimpl.*;
-
-import static wci.intermediate.symtabimpl.DefinitionImpl.*;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
-import static wci.intermediate.symtabimpl.RoutineCodeImpl.*;
-import static wci.intermediate.typeimpl.TypeFormImpl.*;
-import static wci.intermediate.typeimpl.TypeKeyImpl.*;
+import wci.frontend.Parser;
+import wci.frontend.pascal.PascalParserTD;
+import wci.intermediate.Definition;
+import wci.intermediate.RoutineCode;
+import wci.intermediate.SymTabEntry;
+import wci.intermediate.SymTabStack;
+import wci.intermediate.TypeFactory;
+import wci.intermediate.TypeSpec;
 
 /**
  * <h1>Predefined</h1>
@@ -22,6 +51,21 @@ import static wci.intermediate.typeimpl.TypeKeyImpl.*;
  */
 public class Predefined
 {
+	private enum Frontend {
+		PASCAL("integer", "real"),
+		SUBSETC("int", "float");
+		
+		private Frontend(String in, String rn) {
+			this.intName = in;
+			this.realName = rn;
+		}
+
+		final String intName;
+		final String realName;
+	}
+	
+	private static Frontend type;
+	
     // Predefined types.
     public static TypeSpec integerType;
     public static TypeSpec realType;
@@ -62,8 +106,10 @@ public class Predefined
      * Initialize a symbol table stack with predefined identifiers.
      * @param symTab the symbol table stack to initialize.
      */
-    public static void initialize(SymTabStack symTabStack)
+    public static void initialize(SymTabStack symTabStack, Parser parser)
     {
+    	type = parser instanceof PascalParserTD ? Frontend.PASCAL : Frontend.SUBSETC;
+    	
         initializeTypes(symTabStack);
         initializeConstants(symTabStack);
         initializeStandardRoutines(symTabStack);
@@ -76,14 +122,14 @@ public class Predefined
     private static void initializeTypes(SymTabStack symTabStack)
     {
         // Type integer.
-        integerId = symTabStack.enterLocal("integer");
+        integerId = symTabStack.enterLocal(type.intName);
         integerType = TypeFactory.createType(SCALAR);
         integerType.setIdentifier(integerId);
         integerId.setDefinition(DefinitionImpl.TYPE);
         integerId.setTypeSpec(integerType);
 
         // Type real.
-        realId = symTabStack.enterLocal("real");
+        realId = symTabStack.enterLocal(type.realName);
         realType = TypeFactory.createType(SCALAR);
         realType.setIdentifier(realId);
         realId.setDefinition(DefinitionImpl.TYPE);

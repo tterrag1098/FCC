@@ -106,8 +106,10 @@ public class DeclaredRoutineParser extends DeclarationsParser
         }
 
         // Program: Set the program identifier in the symbol table stack.
+        // Set the initial local variables array slot number to 1.
         if (routineDefn == DefinitionImpl.PROGRAM) {
             symTabStack.setProgramId(routineId);
+            symTabStack.getLocalSymTab().nextSlotNumber();  // bump slot number
         }
 
         // Non-forwarded procedure or function: Append to the parent's list

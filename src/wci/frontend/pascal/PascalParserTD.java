@@ -63,7 +63,7 @@ public class PascalParserTD extends Parser
         throws Exception
     {
         long startTime = System.currentTimeMillis();
-        Predefined.initialize(symTabStack);
+        Predefined.initialize(symTabStack, this);
 
         try {
             Token token = nextToken();

@@ -8,6 +8,7 @@ import static wci.frontend.subsetc.SubsetCTokenType.SEMICOLON;
 import static wci.frontend.subsetc.SubsetCTokenType.WHILE;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.SLOT;
 
 import java.util.EnumSet;
 
@@ -104,13 +105,19 @@ public class StatementParser extends SubsetCParserTD
             
             case RETURN: {
                 ICodeNode assignNode = ICodeFactory.createICodeNode(ASSIGN);
+                assignNode.setTypeSpec(parentId.getTypeSpec());
             	SymTabEntry targetId = symTabStack.enterLocal(parentId.getName());
             	targetId.setDefinition(DefinitionImpl.VARIABLE);
             	targetId.setTypeSpec(parentId.getTypeSpec());
+                
+            	// Set its slot number in the local variables array.
+                int slot = targetId.getSymTab().nextSlotNumber();
+                targetId.setAttribute(SLOT, slot);
 
                 // Create the variable node and set its name attribute.
                 ICodeNode variableNode = ICodeFactory.createICodeNode(VARIABLE);
                 variableNode.setAttribute(ID, targetId);
+                variableNode.setTypeSpec(parentId.getTypeSpec());
 
                 // The ASSIGN node adopts the variable node as its first child.
                 assignNode.addChild(variableNode);

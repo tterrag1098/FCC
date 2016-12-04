@@ -62,6 +62,7 @@ public class AssignmentStatementParser extends StatementParser
         // Create the variable node and set its name attribute.
         ICodeNode variableNode = ICodeFactory.createICodeNode(VARIABLE);
         variableNode.setAttribute(ID, targetId);
+        variableNode.setTypeSpec(targetId.getTypeSpec());
 
         // The ASSIGN node adopts the variable node as its first child.
         assignNode.addChild(variableNode);

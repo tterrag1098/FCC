@@ -1,11 +1,22 @@
 package wci.frontend.subsetc.parsers;
 
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+import static wci.frontend.subsetc.SubsetCErrorCode.INCOMPATIBLE_TYPES;
+import static wci.frontend.subsetc.SubsetCErrorCode.INVALID_NUMBER;
+import static wci.frontend.subsetc.SubsetCErrorCode.INVALID_VAR_PARM;
+import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_COMMA;
+import static wci.frontend.subsetc.SubsetCErrorCode.WRONG_NUMBER_OF_PARMS;
+import static wci.frontend.subsetc.SubsetCTokenType.COLON;
+import static wci.frontend.subsetc.SubsetCTokenType.COMMA;
+import static wci.frontend.subsetc.SubsetCTokenType.LEFT_PAREN;
+import static wci.frontend.subsetc.SubsetCTokenType.RIGHT_PAREN;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.INTEGER_CONSTANT;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.PARAMETERS;
+import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.WRITE_PARM;
 import static wci.intermediate.symtabimpl.DefinitionImpl.VAR_PARM;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
-import static wci.intermediate.typeimpl.TypeFormImpl.*;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_CODE;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_PARMS;
+import static wci.intermediate.typeimpl.TypeFormImpl.SCALAR;
+import static wci.intermediate.typeimpl.TypeFormImpl.SUBRANGE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -23,8 +34,8 @@ import wci.intermediate.TypeForm;
 import wci.intermediate.TypeSpec;
 import wci.intermediate.icodeimpl.ICodeKeyImpl;
 import wci.intermediate.icodeimpl.ICodeNodeTypeImpl;
-import wci.intermediate.subsetc.CTypeChecker;
 import wci.intermediate.symtabimpl.Predefined;
+import wci.intermediate.typeimpl.TypeChecker;
 
 /**
  * <h1>CallParser</h1>
@@ -220,7 +231,7 @@ public class CallParser extends StatementParser
 
         // Value parameter: The actual parameter must be assignment-compatible
         //                  with the formal parameter.
-        else if (!CTypeChecker.areAssignmentCompatible(formalType, actualType)) {
+        else if (!TypeChecker.areAssignmentCompatible(formalType, actualType)) {
             errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
         }
     }

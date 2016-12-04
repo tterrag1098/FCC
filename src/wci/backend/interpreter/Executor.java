@@ -1,12 +1,18 @@
 package wci.backend.interpreter;
 
+import java.io.*;
+
+import wci.frontend.*;
+import wci.frontend.pascal.*;
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
 import wci.backend.*;
+import wci.backend.interpreter.*;
 import wci.backend.interpreter.executors.*;
 import wci.message.*;
 
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
+import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 import static wci.message.MessageType.INTERPRETER_SUMMARY;
 
 /**
@@ -20,11 +26,27 @@ import static wci.message.MessageType.INTERPRETER_SUMMARY;
 public class Executor extends Backend
 {
     protected static int executionCount;
+    protected static RuntimeStack runtimeStack;
     protected static RuntimeErrorHandler errorHandler;
+
+    protected static Scanner standardIn;       // standard input
+    protected static PrintWriter standardOut;  // standard output
 
     static {
         executionCount = 0;
+        runtimeStack = MemoryFactory.createRuntimeStack();
         errorHandler = new RuntimeErrorHandler();
+
+        try {
+            standardIn = new PascalScanner(
+                             new Source(
+                                 new BufferedReader(
+                                     new InputStreamReader(System.in))));
+            standardOut = new PrintWriter(
+                              new PrintStream(System.out));
+        }
+        catch (IOException ignored) {
+        }
     }
 
     /**
@@ -61,14 +83,17 @@ public class Executor extends Backend
         throws Exception
     {
         this.symTabStack = symTabStack;
-        this.iCode = iCode;
-
         long startTime = System.currentTimeMillis();
 
-        // Get the root node of the intermediate code and execute.
-        ICodeNode rootNode = iCode.getRoot();
-        StatementExecutor statementExecutor = new StatementExecutor(this);
-        statementExecutor.execute(rootNode);
+        SymTabEntry programId = symTabStack.getProgramId();
+
+        // Construct an artificial CALL node to the main program.
+        ICodeNode callNode = ICodeFactory.createICodeNode(CALL);
+        callNode.setAttribute(ID, programId);
+
+        // Execute the main program.
+        CallDeclaredExecutor callExecutor = new CallDeclaredExecutor(this);
+        callExecutor.execute(callNode);
 
         float elapsedTime = (System.currentTimeMillis() - startTime)/1000f;
         int runtimeErrors = errorHandler.getErrorCount();

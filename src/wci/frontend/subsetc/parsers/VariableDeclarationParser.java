@@ -3,6 +3,7 @@ package wci.frontend.subsetc.parsers;
 import static wci.frontend.subsetc.SubsetCErrorCode.*;
 import static wci.frontend.subsetc.SubsetCTokenType.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.PROGRAM_PARM;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.SLOT;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -190,6 +191,10 @@ public class VariableDeclarationParser extends DeclarationsParser
                 id = symTabStack.enterLocal(name);
                 id.setDefinition(definition);
                 id.appendLineNumber(token.getLineNumber());
+                
+                // Set its slot number in the local variables array.
+                int slot = id.getSymTab().nextSlotNumber();
+                id.setAttribute(SLOT, slot);
             }
             else {
                 errorHandler.flag(token, IDENTIFIER_REDEFINED, this);

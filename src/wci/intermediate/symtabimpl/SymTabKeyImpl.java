@@ -20,5 +20,8 @@ public enum SymTabKeyImpl implements SymTabKey
     ROUTINE_PARMS, ROUTINE_ROUTINES,
 
     // Variable or record field value.
-    DATA_VALUE
+    DATA_VALUE,
+
+    // Local variables array slot numbers.
+    SLOT, WRAP_SLOT
 }

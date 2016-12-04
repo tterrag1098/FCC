@@ -12,7 +12,7 @@ public interface Definition
 {
     /**
      * Getter.
-     * @return the text of the definition.
+     * @return String the text of the definition.
      */
     public String getText();
 }

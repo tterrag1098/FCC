@@ -220,6 +220,8 @@ PROCEDURE ProcessWolf (oldrow, oldcol : index);
                     '[', oldrow:1, ', ', oldcol:1, ']');
         END
         ELSE BEGIN
+            newrow := 0;
+            newcol := 0;
 
             {Move to adjacent location, or stay put.}
             NewLocation(wolf, oldrow, oldcol, newrow, newcol);
@@ -271,6 +273,8 @@ PROCEDURE ProcessRabbit (oldrow, oldcol : index);
         moved : boolean;            {true iff rabbit moved}
 
     BEGIN
+        newrow := 0;
+        newcol := 0;
 
         {Move to adjacent location, or stay put.}
         NewLocation(rabbit, oldrow, oldcol, newrow, newcol);

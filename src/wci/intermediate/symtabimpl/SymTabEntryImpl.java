@@ -126,9 +126,13 @@ public class SymTabEntryImpl
     {
         return get(key);
     }
+
+	@Override
+	public String toString() {
+		return "SymTabEntryImpl [name=" + name + ", definition=" + definition
+				+ ", typeSpec=" + typeSpec + ", lineNumbers=" + lineNumbers
+				+ ", content()=" + super.toString() + "]";
+	}
     
-    @Override
-    public String toString() {
-    	return name + ": " + super.toString();
-    }
+    
 }
