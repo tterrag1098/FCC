@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.*;
 import wci.backend.compiler.*;
-
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 import static wci.backend.compiler.Directive.*;
@@ -169,7 +168,9 @@ public class ProgramGenerator extends CodeGenerator
     private void generateMainMethodCode()
         throws PascalCompilerException
     {
-        ICode iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
+        ArrayList<SymTabEntry> routineIds =
+                (ArrayList<SymTabEntry>) programId.getAttribute(ROUTINE_ROUTINES);
+        ICode iCode = (ICode) routineIds.stream().filter(s -> s.getName().equals("main")).findFirst().get().getAttribute(ROUTINE_ICODE);
         ICodeNode root = iCode.getRoot();
 
         emitBlankLine();
