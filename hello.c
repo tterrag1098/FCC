@@ -36,7 +36,7 @@ int main()
 		int bar;
 		i = i + 1;
 		// Simple if, compound statement
-		if (abc > 4)
+		if (abc == 4)
 		{
 			int baz;
 			abc = i * (abc - 1);

@@ -116,6 +116,7 @@ public class DeclaredRoutineParser extends DeclarationsParser
         // Program: Set the program identifier in the symbol table stack.
         if (routineId.getName().equals("main") && routineDefn == DefinitionImpl.FUNCTION) {
             symTabStack.getProgramId().setAttribute(ROUTINE_ICODE, routineId.getAttribute(ROUTINE_ICODE));
+            symTabStack.getLocalSymTab().nextSlotNumber();  // bump slot number
         }
 
         // Non-forwarded procedure or function: Append to the parent's list

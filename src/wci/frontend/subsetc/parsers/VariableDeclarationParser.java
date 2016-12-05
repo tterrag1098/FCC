@@ -137,6 +137,7 @@ public class VariableDeclarationParser extends DeclarationsParser
         do {
 //            token = synchronize(IDENTIFIER_START_SET);
             SymTabEntry id = parseIdentifier(token);
+            id.setAttribute(SLOT, symTabStack.getLocalSymTab().nextSlotNumber() + 1);
             token = currentToken();
             if (token.getType() == IDENTIFIER) token = nextToken();
 

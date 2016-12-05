@@ -6,6 +6,7 @@ import static wci.frontend.subsetc.SubsetCErrorCode.INCOMPATIBLE_TYPES;
 import static wci.frontend.subsetc.SubsetCErrorCode.MISSING_RIGHT_PAREN;
 import static wci.frontend.subsetc.SubsetCErrorCode.UNEXPECTED_TOKEN;
 import static wci.frontend.subsetc.SubsetCTokenType.EQUALS;
+import static wci.frontend.subsetc.SubsetCTokenType.EQUALS_EQUALS;
 import static wci.frontend.subsetc.SubsetCTokenType.GREATER_EQUALS;
 import static wci.frontend.subsetc.SubsetCTokenType.GREATER_THAN;
 import static wci.frontend.subsetc.SubsetCTokenType.IDENTIFIER;
@@ -96,14 +97,14 @@ public class ExpressionParser extends StatementParser
     
     // Set of relational operators.
     private static final EnumSet<SubsetCTokenType> REL_OPS =
-        EnumSet.of(EQUALS, NOT_EQUALS, LESS_THAN, LESS_EQUALS,
+        EnumSet.of(EQUALS_EQUALS, NOT_EQUALS, LESS_THAN, LESS_EQUALS,
                    GREATER_THAN, GREATER_EQUALS);
 
     // Map relational operator tokens to node types.
     private static final HashMap<SubsetCTokenType, ICodeNodeType>
         REL_OPS_MAP = new HashMap<>();
     static {
-        REL_OPS_MAP.put(EQUALS, EQ);
+        REL_OPS_MAP.put(EQUALS_EQUALS, EQ);
         REL_OPS_MAP.put(NOT_EQUALS, NE);
         REL_OPS_MAP.put(LESS_THAN, LT);
         REL_OPS_MAP.put(LESS_EQUALS, LE);

@@ -1,7 +1,9 @@
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ICODE;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.lang.ProcessBuilder.Redirect;
 
 import wci.backend.Backend;
 import wci.backend.BackendFactory;
@@ -11,6 +13,7 @@ import wci.frontend.Source;
 import wci.intermediate.ICode;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.SymTabStack;
+import wci.intermediate.icodeimpl.ICodeKeyImpl;
 import wci.message.Message;
 import wci.message.MessageListener;
 import wci.message.MessageType;
@@ -75,6 +78,13 @@ public class SubsetC
                 }
 
                 backend.process(iCode, symTabStack);
+                
+                String name = programId.getName();
+                
+                ProcessBuilder pb = new ProcessBuilder("java", "-jar", "jasmin.jar", name + ".j");
+                pb.inheritIO();
+                Process p = pb.start();
+                p.waitFor();
             }
         }
         catch (Exception ex) {

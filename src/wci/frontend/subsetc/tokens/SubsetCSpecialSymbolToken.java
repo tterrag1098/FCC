@@ -43,28 +43,17 @@ public class SubsetCSpecialSymbolToken extends SubsetCToken
 
             // Single-character special symbols.
             case '+':  case '-':  case '*':  case '/':  case ',':
-            case ';':  case '\'': case '=':  case '(':  case ')': 
-            case '[':  case ']':  case '{':  case '}':  case '^': case ':': {
+            case ';':  case '\'': case '(':  case ')':  case '[':  
+            case ']':  case '{':  case '}':  case '^':  case ':': {
                 nextChar();  // consume character
                 break;
             }
 
-
-            // < or <=
-            case '<': {
-                currentChar = nextChar();  // consume '<';
-
-                if (currentChar == '=') {
-                    text += currentChar;
-                    nextChar();  // consume '='
-                }
-
-                break;
-            }
-
-            // > or >=
+            case '=':
+            case '!':
+            case '<':
             case '>': {
-                currentChar = nextChar();  // consume '>';
+                currentChar = nextChar();  // consume first char
 
                 if (currentChar == '=') {
                     text += currentChar;
