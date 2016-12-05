@@ -114,13 +114,13 @@ public class DeclaredRoutineParser extends DeclarationsParser
         }
 
         // Program: Set the program identifier in the symbol table stack.
-//        if (routineId.getName().equals("main") && routineDefn == DefinitionImpl.FUNCTION) {
-//            symTabStack.getProgramId().setAttribute(ROUTINE_ICODE, routineId.getAttribute(ROUTINE_ICODE));
-//        }
+        if (routineId.getName().equals("main") && routineDefn == DefinitionImpl.FUNCTION) {
+            symTabStack.getProgramId().setAttribute(ROUTINE_ICODE, routineId.getAttribute(ROUTINE_ICODE));
+        }
 
         // Non-forwarded procedure or function: Append to the parent's list
         //                                      of routines.
-        if (routineId.getAttribute(ROUTINE_CODE) != FORWARD) {
+        else if (routineId.getAttribute(ROUTINE_CODE) != FORWARD) {
             ArrayList<SymTabEntry> subroutines = (ArrayList<SymTabEntry>)
                                        parentId.getAttribute(ROUTINE_ROUTINES);
             subroutines.add(routineId);

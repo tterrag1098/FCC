@@ -168,10 +168,11 @@ public class ProgramGenerator extends CodeGenerator
     private void generateMainMethodCode()
         throws PascalCompilerException
     {
-        ArrayList<SymTabEntry> routineIds =
-                (ArrayList<SymTabEntry>) programId.getAttribute(ROUTINE_ROUTINES);
-        ICode iCode = (ICode) routineIds.stream().filter(s -> s.getName().equals("main")).findFirst().get().getAttribute(ROUTINE_ICODE);
-        ICodeNode root = iCode.getRoot();
+//        ArrayList<SymTabEntry> routineIds =
+//                (ArrayList<SymTabEntry>) programId.getAttribute(ROUTINE_ROUTINES);
+//        ICode iCode = (ICode) routineIds.stream().filter(s -> s.getName().equals("main")).findFirst().get().getAttribute(ROUTINE_ICODE);
+        ICode iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
+    	ICodeNode root = iCode.getRoot();
 
         emitBlankLine();
 
