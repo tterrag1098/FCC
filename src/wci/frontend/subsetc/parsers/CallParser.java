@@ -13,6 +13,8 @@ import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.INTEGER_CONSTANT;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.PARAMETERS;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.WRITE_PARM;
 import static wci.intermediate.symtabimpl.DefinitionImpl.VAR_PARM;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.DECLARED;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.FORWARD;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_CODE;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_PARMS;
 import static wci.intermediate.typeimpl.TypeFormImpl.SCALAR;
@@ -67,8 +69,10 @@ public class CallParser extends StatementParser
     {
         SymTabEntry pfId = symTabStack.lookup(token.getText());
         RoutineCode routineCode = (RoutineCode) pfId.getAttribute(ROUTINE_CODE);
-        CallDeclaredParser callParser = new CallDeclaredParser(this);
-
+        CallParser callParser = (routineCode == DECLARED) ||
+                (routineCode == FORWARD)
+                    ? new CallDeclaredParser(this)
+                    : new CallStandardParser(this);
 
         return callParser.parse(token);
     }
@@ -197,11 +201,11 @@ public class CallParser extends StatementParser
 
         token = nextToken();  // consume closing )
 
-        if ((parmsNode.getChildren().size() == 0) ||
-            (isDeclared && (parmIndex != parmCount-1)))
-        {
-            errorHandler.flag(token, WRONG_NUMBER_OF_PARMS, this);
-        }
+//        if ((parmsNode.getChildren().size() == 0) ||
+//            (isDeclared && (parmIndex != parmCount-1)))
+//        {
+//            errorHandler.flag(token, WRONG_NUMBER_OF_PARMS, this);
+//        }
 
         return parmsNode;
     }

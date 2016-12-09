@@ -126,7 +126,6 @@ public class TypeSpecImpl
 
 	@Override
 	public String toString() {
-		return "TypeSpecImpl [form=" + form + ", identifier=" + identifier.getName()
-				+ ", content()=" + super.toString() + "]";
+		return "TypeSpecImpl [form=" + form + ", identifier=" + identifier.getName() + "]";
 	}
 }

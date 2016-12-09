@@ -4,7 +4,6 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
-.field private static foo I
 
 .method public <init>()V
 
@@ -16,28 +15,51 @@
 .limit stack 1
 .end method
 
-.method private static adder(I)I
+.method private static foo()I
 
-.var 0 is num I
-.var 1 is adder I
-
-
-.line 9
+.line 4
 	iconst_1
-	istore_0
-
-	iload_1
 	ireturn
 
-.limit locals 2
+.limit locals 0
 .limit stack 1
 .end method
 
-.method private static foobar(IF)I
+.method public static main([Ljava/lang/String;)V
 
-.var 0 is test I
-.var 1 is test2 F
-.var 2 is foobar I
+	.var 2 is k I
+	
+	new	RunTimer
+	dup
+	invokenonvirtual	RunTimer/<init>()V
+	putstatic	dummyprogramname/_runTimer LRunTimer;
+	new	PascalTextIn
+	dup
+	invokenonvirtual	PascalTextIn/<init>()V
+	putstatic	dummyprogramname/_standardIn LPascalTextIn;
 
 
-.line 14
+.line 9
+	invokestatic	dummyprogramname/foo()I
+	istore_2
+.line 11
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"%d"
+	iconst_1
+	anewarray	java/lang/Object
+	dup
+	iconst_0
+	iload_2
+	invokestatic	java/lang/Integer.valueOf(I)Ljava/lang/Integer;
+	aastore
+	invokestatic	java/lang/String/format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+	invokevirtual	java/io/PrintStream.print(Ljava/lang/String;)V
+
+	getstatic	dummyprogramname/_runTimer LRunTimer;
+	invokevirtual	RunTimer.printElapsedTime()V
+
+	return
+
+.limit locals 3
+.limit stack 7
+.end method

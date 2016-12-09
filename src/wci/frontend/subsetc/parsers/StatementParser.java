@@ -83,7 +83,11 @@ public class StatementParser extends SubsetCParserTD
             // An assignment statement begins with a variable's identifier.
             case IDENTIFIER: {
             	SymTabEntry entry = symTabStack.lookup(token.getText());
-            	if (entry == null) break;
+            	if (entry == null) {
+            		errorHandler.flag(token, SubsetCErrorCode.IDENTIFIER_UNDEFINED, this);
+            		synchronize(STMT_FOLLOW_SET);
+            		break;
+            	}
             	switch((DefinitionImpl) entry.getDefinition()) {
             	case TYPE:
             		VariableDeclarationParser declarationParser = new VariableDeclarationParser(this);
@@ -133,6 +137,7 @@ public class StatementParser extends SubsetCParserTD
 
             default: {
                 statementNode = ICodeFactory.createICodeNode(NO_OP);
+                token = nextToken();
                 break;
             }
         }

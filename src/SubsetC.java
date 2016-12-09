@@ -85,6 +85,11 @@ public class SubsetC
                 pb.inheritIO();
                 Process p = pb.start();
                 p.waitFor();
+                
+                pb = new ProcessBuilder("java", "-cp", "\"bin;.\"", name);
+                pb.inheritIO();
+                p = pb.start();
+                p.waitFor();
             }
         }
         catch (Exception ex) {
