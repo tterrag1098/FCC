@@ -14,6 +14,7 @@ import wci.intermediate.ICode;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.SymTabStack;
 import wci.intermediate.icodeimpl.ICodeKeyImpl;
+import wci.intermediate.symtabimpl.DefinitionImpl;
 import wci.message.Message;
 import wci.message.MessageListener;
 import wci.message.MessageType;
@@ -56,6 +57,12 @@ public class SubsetC
 
             backend = BackendFactory.createBackend(operation);
             backend.addMessageListener(new BackendMessageListener());
+
+            // Create a dummy program identifier symbol table entry.
+            String progName = new File(filePath).getName().replace(".c", "");
+            SymTabEntry routineId = parser.getSymTabStack().enterLocal(progName);
+            routineId.setDefinition(DefinitionImpl.PROGRAM);
+            parser.getSymTabStack().setProgramId(routineId);
 
             parser.parse();
             source.close();

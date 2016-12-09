@@ -71,11 +71,8 @@ public class SubsetCParserTD extends Parser
             
             ICode iCode = ICodeFactory.createICode();
 
-            // Create a dummy program identifier symbol table entry.
-            routineId = symTabStack.enterLocal("DummyProgramName".toLowerCase());
-            routineId.setDefinition(DefinitionImpl.PROGRAM);
-            symTabStack.setProgramId(routineId);
-
+            routineId = symTabStack.getProgramId();
+            
             // Push a new symbol table onto the symbol table stack and set
             // the routine's symbol table and intermediate code.
             routineId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
