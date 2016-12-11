@@ -22,6 +22,7 @@ import wci.intermediate.ICodeNode;
 import wci.intermediate.SymTab;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.symtabimpl.DefinitionImpl;
+import wci.intermediate.symtabimpl.SymTabEntryImpl;
 import wci.intermediate.symtabimpl.SymTabKeyImpl;
 
 /**
@@ -110,12 +111,12 @@ public class StatementParser extends SubsetCParserTD
             case RETURN: {
                 ICodeNode assignNode = ICodeFactory.createICodeNode(ASSIGN);
                 assignNode.setTypeSpec(parentId.getTypeSpec());
-            	SymTabEntry targetId = symTabStack.enterLocal(parentId.getName());
+            	SymTabEntry targetId = new SymTabEntryImpl(parentId.getName(), symTabStack.getLocalSymTab());
             	targetId.setDefinition(DefinitionImpl.VARIABLE);
             	targetId.setTypeSpec(parentId.getTypeSpec());
                 
             	// Set its slot number in the local variables array.
-                int slot = targetId.getSymTab().nextSlotNumber();
+                int slot = targetId.getSymTab().maxSlotNumber() + 1;
                 targetId.setAttribute(SLOT, slot);
 
                 // Create the variable node and set its name attribute.

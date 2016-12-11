@@ -23,5 +23,8 @@ public enum SymTabKeyImpl implements SymTabKey
     DATA_VALUE,
 
     // Local variables array slot numbers.
-    SLOT, WRAP_SLOT
+    SLOT, WRAP_SLOT,
+    
+    // Hack for stupid pascal-centric code
+    MAIN_METHOD_ROUTINE
 }

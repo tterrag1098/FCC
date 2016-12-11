@@ -46,4 +46,10 @@ public interface SymTab
      * @return the maximum local variables array slot number.
      */
     public int maxSlotNumber();
+
+    /**
+     * Called to update this stack's max slot number from a child stack
+     * @param slots The number of slots needed by the child stack
+     */
+	void childUsed(int slots);
 }

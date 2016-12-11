@@ -13,7 +13,11 @@ import wci.frontend.pascal.PascalTokenType;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.intermediate.ICodeFactory;
 import wci.intermediate.ICodeNode;
+import wci.intermediate.SymTab;
 import wci.intermediate.SymTabEntry;
+import wci.intermediate.SymTabStack;
+import wci.intermediate.icodeimpl.ICodeKeyImpl;
+import wci.intermediate.symtabimpl.SymTabKeyImpl;
 import wci.util.CrossReferencer;
 
 /**
@@ -48,7 +52,11 @@ public class CompoundStatementParser extends StatementParser
 
         // Create the COMPOUND node.
         ICodeNode compoundNode = ICodeFactory.createICodeNode(COMPOUND);
-        symTabStack.push();
+		if (parentId.getAttribute(SymTabKeyImpl.ROUTINE_SYMTAB) == null) {
+			parentId.setAttribute(SymTabKeyImpl.ROUTINE_SYMTAB, symTabStack.push());
+		} else {
+			symTabStack.push();
+		}
         
         // Parse the statement list terminated by the END token.
         StatementParser statementParser = new StatementParser(this);
@@ -70,10 +78,13 @@ public class CompoundStatementParser extends StatementParser
         		nestedStacks.append("\n");
         	}
         };
+        
+        SymTab blockstack = symTabStack.pop();
+
         PrintStream replaced = System.out;
         System.setOut(replace);
         nestedStacks.append("\n=== NESTED SYMBOL TABLE ===\n\n");
-        cr.printSymTab(symTabStack.pop(), new ArrayList<>());
+        cr.printSymTab(blockstack, new ArrayList<>());
         System.setOut(replaced);
         nestedStacks.append("\n");
         return compoundNode;

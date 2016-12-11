@@ -21,9 +21,6 @@ import static wci.backend.compiler.Instruction.*;
  */
 public class DeclaredRoutineGenerator extends CodeGenerator
 {
-    private SymTabEntry routineId;
-    private String routineName;
-
     private int functionValueSlot;  // function return value slot number
 
     /**
@@ -42,9 +39,6 @@ public class DeclaredRoutineGenerator extends CodeGenerator
     public void generate(SymTabEntry routineId)
         throws PascalCompilerException
     {
-        this.routineId = routineId;
-        this.routineName = routineId.getName();
-
         SymTab routineSymTab = (SymTab) routineId.getAttribute(ROUTINE_SYMTAB);
         localVariables = new LocalVariables(routineSymTab.maxSlotNumber());
         localStack = new LocalStack();
@@ -55,23 +49,23 @@ public class DeclaredRoutineGenerator extends CodeGenerator
             routineId.setAttribute(SLOT, functionValueSlot);
         }
 
-        generateRoutineHeader();
-        generateRoutineLocals();
+        generateRoutineHeader(routineId);
+        generateRoutineLocals(routineId);
 
         // Generate code to allocate any arrays, records, and strings.
         StructuredDataGenerator structuredDataGenerator =
                                     new StructuredDataGenerator(this);
         structuredDataGenerator.generate(routineId);
 
-        generateRoutineCode();
-        generateRoutineReturn();
-        generateRoutineEpilogue();
+        generateRoutineCode(routineId);
+        generateRoutineReturn(routineId);
+        generateRoutineEpilogue(routineId);
     }
 
     /**
      * Generate the routine header.
      */
-    private void generateRoutineHeader()
+    void generateRoutineHeader(SymTabEntry routineId)
     {
         String routineName = routineId.getName();
         ArrayList<SymTabEntry> parmIds =
@@ -98,10 +92,11 @@ public class DeclaredRoutineGenerator extends CodeGenerator
     /**
      * Generate directives for the local variables.
      */
-    private void generateRoutineLocals()
+    void generateRoutineLocals(SymTabEntry routineId)
     {
         SymTab symTab = (SymTab) routineId.getAttribute(ROUTINE_SYMTAB);
         ArrayList<SymTabEntry> ids = symTab.sortedEntries();
+        ids.sort((s1, s2) -> (int) s1.getAttribute(SLOT) - (int) s2.getAttribute(SLOT));
 
         emitBlankLine();
 
@@ -117,18 +112,22 @@ public class DeclaredRoutineGenerator extends CodeGenerator
                               typeDescriptor(id));
             }
         }
+        
+        emitBlankLine();
 
         // Emit an extra .var directive for an implied function variable.
         if (routineId.getDefinition() == FUNCTION) {
-            emitDirective(VAR, functionValueSlot + " is " + routineName,
+            emitDirective(VAR, functionValueSlot + " is " + routineId.getName(),
                           typeDescriptor(routineId.getTypeSpec()));
         }
+        
+        emitBlankLine();
     }
 
     /**
      * Generate code for the routine's body.
      */
-    private void generateRoutineCode()
+    void generateRoutineCode(SymTabEntry routineId)
         throws PascalCompilerException
     {
         ICode iCode = (ICode) routineId.getAttribute(ROUTINE_ICODE);
@@ -144,7 +143,7 @@ public class DeclaredRoutineGenerator extends CodeGenerator
     /**
      * Generate the routine's return code.
      */
-    private void generateRoutineReturn()
+    private void generateRoutineReturn(SymTabEntry routineId)
     {
         emitBlankLine();
 
@@ -167,7 +166,7 @@ public class DeclaredRoutineGenerator extends CodeGenerator
     /**
      * Generate the routine's epilogue.
      */
-    private void generateRoutineEpilogue()
+    private void generateRoutineEpilogue(SymTabEntry routineId)
     {
         emitBlankLine();
         emitDirective(LIMIT_LOCALS, localVariables.count());

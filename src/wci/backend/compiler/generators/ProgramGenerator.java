@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.*;
+import wci.intermediate.typeimpl.TypeFormImpl;
+import wci.intermediate.typeimpl.TypeKeyImpl;
+import wci.intermediate.typeimpl.TypeSpecImpl;
 import wci.backend.compiler.*;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
@@ -171,11 +174,31 @@ public class ProgramGenerator extends CodeGenerator
 //        ArrayList<SymTabEntry> routineIds =
 //                (ArrayList<SymTabEntry>) programId.getAttribute(ROUTINE_ROUTINES);
 //        ICode iCode = (ICode) routineIds.stream().filter(s -> s.getName().equals("main")).findFirst().get().getAttribute(ROUTINE_ICODE);
+    	SymTabEntry main = (SymTabEntry) programId.getAttribute(MAIN_METHOD_ROUTINE);
         ICode iCode = (ICode) programId.getAttribute(ROUTINE_ICODE);
     	ICodeNode root = iCode.getRoot();
+    	
+    	emitBlankLine();
 
-        emitBlankLine();
-
+    	if (main != null) {
+        	main.setDefinition(PROCEDURE); // Override int return
+    		localVariables = new LocalVariables(((SymTab)main.getAttribute(ROUTINE_SYMTAB)).maxSlotNumber() + 1);
+        	
+    		// Increment all slots by one to insert the String[] param
+            SymTab symTab = (SymTab) main.getAttribute(ROUTINE_SYMTAB);
+            ArrayList<SymTabEntry> ids = symTab.sortedEntries();
+            for (SymTabEntry e : ids) {
+            	e.setAttribute(SLOT, (int) e.getAttribute(SLOT) + 1);
+            }
+            SymTabEntry args = symTab.enter("main");
+            args.setAttribute(SLOT, 0);
+            args.setDefinition(DefinitionImpl.VAR_PARM);
+            args.setTypeSpec(new TypeSpecImpl("[Ljava/lang/String"));
+            
+        	DeclaredRoutineGenerator routineGenerator = new DeclaredRoutineGenerator(this);
+        	routineGenerator.generateRoutineLocals(main);
+    	}
+    	
         // Generate code for the compound statement.
         StatementGenerator statementGenerator = new StatementGenerator(this);
         statementGenerator.generate(root);

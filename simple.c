@@ -5,7 +5,9 @@ int foo()
 
 int main()
 {
-	int k;
+	int k, j;
 	k = foo();
-	write(k);
+	j = k + 4;
+	writeln(k);
+	writeln(j);
 }

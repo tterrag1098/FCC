@@ -103,19 +103,10 @@ public class DeclaredRoutineParser extends DeclarationsParser
         routineId.setAttribute(ROUTINE_ICODE, iCode);
         routineId.setAttribute(ROUTINE_ROUTINES, new ArrayList<SymTabEntry>());
 
-        // Push the routine's new symbol table onto the stack.
-        // If it was forwarded, push its existing symbol table.
-        if (routineId.getAttribute(ROUTINE_CODE) == FORWARD) {
-            SymTab symTab = (SymTab) routineId.getAttribute(ROUTINE_SYMTAB);
-            symTabStack.push(symTab);
-        }
-        else {
-            routineId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
-        }
-
         // Program: Set the program identifier in the symbol table stack.
         if (routineId.getName().equals("main") && routineDefn == DefinitionImpl.FUNCTION) {
             symTabStack.getProgramId().setAttribute(ROUTINE_ICODE, routineId.getAttribute(ROUTINE_ICODE));
+            symTabStack.getProgramId().setAttribute(MAIN_METHOD_ROUTINE, routineId);
             symTabStack.getLocalSymTab().nextSlotNumber();  // bump slot number
         }
 
@@ -152,9 +143,6 @@ public class DeclaredRoutineParser extends DeclarationsParser
             ICodeNode rootNode = blockParser.parse(token, routineId);
             iCode.setRoot(rootNode);
         }
-
-        // Pop the routine's symbol table off the stack.
-        symTabStack.pop();
 
         return routineId;
     }

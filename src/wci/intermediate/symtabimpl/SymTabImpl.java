@@ -31,7 +31,7 @@ public class SymTabImpl
     {
         this.nestingLevel = nestingLevel;
         this.slotNumber = -1;
-        this.maxSlotNumber = 0;
+        this.maxSlotNumber = -1;
     }
 
     /**
@@ -88,8 +88,8 @@ public class SymTabImpl
      */
     public int nextSlotNumber()
     {
-        maxSlotNumber = ++slotNumber;
-        return slotNumber;
+    	maxSlotNumber++;
+        return ++slotNumber;
     }
 
     /**
@@ -98,5 +98,11 @@ public class SymTabImpl
     public int maxSlotNumber()
     {
         return maxSlotNumber;
+    }
+    
+    @Override
+    public void childUsed(int slots) 
+    {
+    	maxSlotNumber = Math.max(slotNumber + slots, maxSlotNumber);
     }
 }

@@ -10,16 +10,14 @@ int adder(int num)
 
 int foobar(int test, float test2)
 {
-	int x, y;
+	int q, x, y, z;
 	if (test == 0)
 	{
-		int q;
 		q = 4;
 		x = x + q;
 	}
 	x = 4;
 	y = 3;
-	int z;
 	z = x * y + test;
 	return z;
 }
