@@ -12,6 +12,7 @@ import java.util.EnumSet;
 
 import wci.frontend.Token;
 import wci.frontend.TokenType;
+import wci.frontend.subsetc.SubsetCErrorCode;
 import wci.frontend.subsetc.SubsetCParserTD;
 import wci.frontend.subsetc.SubsetCTokenType;
 import wci.intermediate.Definition;
@@ -350,34 +351,30 @@ public class DeclaredRoutineParser extends DeclarationsParser
                                                     SymTabEntry routineId)
         throws Exception
     {
-        TokenType tokenType = token.getType();
+        TypeSpec type;
 
-        // VAR or value parameter?
-//        if (tokenType == VAR) {
-//            if (!isProgram) {
-//                parmDefn = VAR_PARM;
-//            }
-//            else {
-//                errorHandler.flag(token, INVALID_VAR_PARM, this);
-//            }
-//
-//            token = nextToken();  // consume VAR
-//        }
-//        else if (!isProgram) {
-//            parmDefn = VALUE_PARM;
-//        }
-
-        // Parse the parameter sublist and its type specification.
         VariableDeclarationParser variableDeclarationsParser =
-            new VariableDeclarationParser(this);
-        variableDeclarationsParser.setDefinition(VALUE_PARM);
-        TypeSpec type = variableDeclarationsParser.parseTypeSpec(token);
-        token = currentToken();
-        SymTabEntry parm = variableDeclarationsParser.parseIdentifier(token);
-        parm.setTypeSpec(type);
+	            new VariableDeclarationParser(this);
         
+        if (token.getType() != IDENTIFIER) {
+        	errorHandler.flag(token, SubsetCErrorCode.INVALID_TYPE, this);
+        	return null;
+        } else {
+	        // Parse the parameter sublist and its type specification.
+	        variableDeclarationsParser.setDefinition(VALUE_PARM);
+        	type = variableDeclarationsParser.parseTypeSpec(token);
+        }
+        token = currentToken();
+        if (token.getType() != IDENTIFIER) {
+        	errorHandler.flag(token, SubsetCErrorCode.MISSING_IDENTIFIER, this);
+        	synchronize(PARAMETER_FOLLOW_SET);
+        	return null;
+        }
+        
+    	SymTabEntry parm = variableDeclarationsParser.parseIdentifier(token);
+    	parm.setTypeSpec(type);
+
         token = nextToken();
-        tokenType = token.getType();
 
         token = synchronize(COMMA_SET);
         if (token.getType() == COMMA) {

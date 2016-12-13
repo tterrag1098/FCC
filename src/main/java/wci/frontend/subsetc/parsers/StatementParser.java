@@ -126,11 +126,19 @@ public class StatementParser extends SubsetCParserTD
 
                 // The ASSIGN node adopts the variable node as its first child.
                 assignNode.addChild(variableNode);
+                token = nextToken(); // Consume RETURN
                 
-            	ExpressionParser expressionParser = new ExpressionParser(this);
-            	token = nextToken(); // Consume RETURN
-                assignNode.addChild(expressionParser.parse(token));
-                
+                if (token.getType() != SEMICOLON) {
+	            	ExpressionParser expressionParser = new ExpressionParser(this);
+	                assignNode.addChild(expressionParser.parse(token));
+	                
+	                if (parentId.getDefinition() == DefinitionImpl.PROCEDURE) {
+	                	errorHandler.flag(token, SubsetCErrorCode.INVALID_ASSIGMENT_VOID, this);
+	                }
+                } else if (parentId.getDefinition() == DefinitionImpl.FUNCTION) {
+                	errorHandler.flag(token, SubsetCErrorCode.MISSING_EXPRESSION, this);
+                }
+
                 statementNode = assignNode;
                 token = nextToken(); // Consume semicolon
                 break;

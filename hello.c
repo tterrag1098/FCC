@@ -8,6 +8,16 @@ int adder(int num)
 	return 1;
 }
 
+void foo1()
+{
+    return ;
+}
+
+int bar()
+{
+
+}
+
 int foobar(int test, float test2)
 {
 	int q, x, y, z;
@@ -59,14 +69,14 @@ int main()
 
 	float f;
 	f = 0.3;
-	
+
 	int rval;
-//	rval = adder(); // Error (not enough params)
+	rval = adder(); // Error (not enough params)
 	rval = adder(abc); // OK
-//	rval = foobar(abc); // Error (not enough params)
+	rval = foobar(abc); // Error (not enough params)
 	rval = foobar(abc, i); // OK
-//	rval = foobar(f, abc); // Error (invalid param types)
-//  rval = proc(); // Error (cannot assign to procedure)
+	rval = foobar(f, abc); // Error (invalid param types)
+    rval = proc(); // Error (cannot assign to procedure)
 
 	write(rval);
 }

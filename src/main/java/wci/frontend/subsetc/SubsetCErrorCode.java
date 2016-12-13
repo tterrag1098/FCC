@@ -42,6 +42,7 @@ public enum SubsetCErrorCode
     MISSING_DOT_DOT("Missing .."),
     MISSING_END("Missing END"),
     MISSING_EQUALS("Missing ="),
+    MISSING_EXPRESSION("Missing expression"),
     MISSING_FOR_CONTROL("Invalid FOR control variable"),
     MISSING_IDENTIFIER("Missing identifier"),
     MISSING_LEFT_BRACKET("Missing ["),

@@ -202,11 +202,10 @@ public class CallParser extends StatementParser
 
         token = nextToken();  // consume closing )
 
-//        if ((parmsNode.getChildren().size() == 0) ||
-//            (isDeclared && (parmIndex != parmCount-1)))
-//        {
-//            errorHandler.flag(token, WRONG_NUMBER_OF_PARMS, this);
-//        }
+        if (isDeclared && parmsNode.getChildren().size() != parmCount)
+        {
+            errorHandler.flag(token, WRONG_NUMBER_OF_PARMS, this);
+        }
 
         return parmsNode;
     }
