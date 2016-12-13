@@ -41,22 +41,6 @@ public class ControlStatementParser extends StatementParser {
 			ExpressionParser expr = new ExpressionParser(this);
 			ICodeNode node = expr.parse(token);
 			if (controlNode.getType() == LOOP) {
-				/*
-				 * So here's the deal. Whoever wrote the backend code for this is a moron.
-				 * 
-				 * In pascal, all loops are done REPEAT { ... } UNTIL ...
-				 * This means that when converting to a while-style loop,
-				 * the condition must be negated.
-				 * 
-				 * This is done automatically **IN THE BACKEND**!! You know,
-				 * the part that was supposed to be language agnostic.
-				 * 
-				 * So, as a workaround, to implement proper C-style while loops,
-				 * we have to negate our condition, so that it is AGAIN NEGATED
-				 * by the backend. Otherwise all while loop conditions are inverted.
-				 * 
-				 * </rant>
-				 */
 				ICodeNode not = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.NOT);
 				not.addChild(node);
 				node = not;
