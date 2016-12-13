@@ -83,19 +83,28 @@ public class SubsetCScanner extends Scanner
 
             // Start of a comment?
             if (currentChar == '/') {
-            	currentChar = nextChar();
-            	if (currentChar == '*') {
+            	char next = peekChar();
+            	if (next == '*') {
+                	// Handle block comments
+            		currentChar = nextChar(); // Consume peeked char
             		do {
             			currentChar = nextChar();
             			if (currentChar == '*') {
             				currentChar = nextChar();
             			}
             		} while (currentChar != '/' && currentChar != EOF);
-            	} else if (currentChar == '/') {
+            	} else if (next == '/') {
+                	// Handle single line comments
             		do {
             			currentChar = nextChar();
             		} while (currentChar != EOL && currentChar != EOF);
-            	}                
+            	} else {
+                	// Otherwise, pretend we didn't see anything
+            		break;
+            	}
+            	if (currentChar != EOF) {
+            		currentChar = nextChar(); // Process terminal char, whether it be a slash or an EOL, obviously ignoring EOF
+            	}
             }
 
             // Not a comment.

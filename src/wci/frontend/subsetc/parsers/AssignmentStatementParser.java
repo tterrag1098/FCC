@@ -93,13 +93,6 @@ public class AssignmentStatementParser extends StatementParser
         ICodeNode exprNode = expressionParser.parse(token);
         assignNode.addChild(exprNode);
         
-        token = currentToken();
-        if (token.getType() == SEMICOLON) {
-        	token = nextToken();
-        } else {
-        	errorHandler.flag(token, MISSING_SEMICOLON, this);
-        }
-        
         // Type check: Assignment compatible?
         TypeSpec exprType = exprNode != null ? exprNode.getTypeSpec()
                                              : Predefined.undefinedType;
@@ -107,6 +100,13 @@ public class AssignmentStatementParser extends StatementParser
             errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
         }
         
+        token = currentToken();
+        if (token.getType() == SEMICOLON) {
+        	token = nextToken();
+        } else {
+        	errorHandler.flag(token, MISSING_SEMICOLON, this);
+        }
+
         assignNode.setTypeSpec(targetType);
         return assignNode;
     }

@@ -4,6 +4,7 @@
 .field private static _runTimer LRunTimer;
 .field private static _standardIn LPascalTextIn;
 
+.field private static epsilon F
 .field private static number I
 
 .method public <init>()V
@@ -18,9 +19,11 @@
 
 .method private static root(F)F
 
-.var 1 is r F
 .var 0 is x F
+.var 1 is r F
+
 .var 2 is root F
+
 
 
 .line 14
@@ -28,16 +31,6 @@
 	fstore_1
 .line 15
 L001:
-.line 16
-	fload_0
-	fload_1
-	fdiv
-	fload_1
-	fadd
-	iconst_2
-	i2f
-	fdiv
-	fstore_1
 	fload_0
 	fload_1
 	dup
@@ -47,18 +40,30 @@ L001:
 	i2f
 	fsub
 	invokestatic	java/lang/Math/abs(F)F
-	ldc	1.0E-6
+	getstatic	newton2/epsilon F
 	fcmpg
-	iflt	L003
+	ifge	L003
 	iconst_0
 	goto	L004
 L003:
 	iconst_1
 L004:
+	iconst_1
+	ixor
 	ifne	L002
+.line 17
+	fload_0
+	fload_1
+	fdiv
+	fload_1
+	fadd
+	iconst_2
+	i2f
+	fdiv
+	fstore_1
 	goto	L001
 L002:
-.line 18
+.line 20
 	fload_1
 	fstore_2
 
@@ -75,18 +80,27 @@ L002:
 .var 1 is root F
 
 
-.line 23
+
+
+.line 26
 	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	ldc	"The square root of %4d is %8.4f\n"
-	iconst_2
+	ldc	"%d\n"
+	iconst_1
 	anewarray	java/lang/Object
 	dup
 	iconst_0
 	iload_0
 	invokestatic	java/lang/Integer.valueOf(I)Ljava/lang/Integer;
 	aastore
-	dup
+	invokestatic	java/lang/String/format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+	invokevirtual	java/io/PrintStream.print(Ljava/lang/String;)V
+.line 27
+	getstatic	java/lang/System/out Ljava/io/PrintStream;
+	ldc	"%f\n"
 	iconst_1
+	anewarray	java/lang/Object
+	dup
+	iconst_0
 	fload_1
 	invokestatic	java/lang/Float.valueOf(F)Ljava/lang/Float;
 	aastore
@@ -111,68 +125,70 @@ L002:
 	putstatic	newton2/_standardIn LPascalTextIn;
 
 
-.line 27
+
+.var 0 is main Ljava/lang/StringBuilder;
+
+
+.line 31
+	ldc	6.0E-6
+	putstatic	newton2/epsilon F
+.line 32
+	iconst_1
+	ineg
+	putstatic	newton2/number I
+.line 33
 L005:
-.line 28
+	getstatic	newton2/number I
+	iconst_0
+	if_icmpne	L007
+	iconst_0
+	goto	L008
+L007:
+	iconst_1
+L008:
+	iconst_1
+	ixor
+	ifne	L006
+.line 36
 	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	invokevirtual	java/io/PrintStream.println()V
-.line 29
-	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	ldc	"Enter new number (0 to quit): "
+	ldc	"\n"
 	invokevirtual	java/io/PrintStream.print(Ljava/lang/String;)V
-.line 30
+.line 38
 	getstatic	newton2/_standardIn LPascalTextIn;
 	invokevirtual	PascalTextIn.readInteger()I
 	putstatic	newton2/number I
-.line 32
+.line 38
 	getstatic	newton2/number I
 	iconst_0
-	if_icmpeq	L008
+	if_icmpeq	L010
 	iconst_0
-	goto	L009
-L008:
+	goto	L011
+L010:
 	iconst_1
-L009:
-	ifeq	L010
-.line 33
+L011:
+	ifeq	L009
+.line 41
 	getstatic	newton2/number I
 	fconst_0
 	invokestatic	newton2/print(IF)V
-	goto	L007
-L010:
-.line 35
+L009:
+.line 43
 	getstatic	newton2/number I
 	iconst_0
-	if_icmplt	L012
+	if_icmpgt	L013
 	iconst_0
-	goto	L013
-L012:
-	iconst_1
+	goto	L014
 L013:
-	ifeq	L014
-.line 36
-	getstatic	java/lang/System/out Ljava/io/PrintStream;
-	ldc	"*** ERROR:  number < 0\n"
-	invokevirtual	java/io/PrintStream.print(Ljava/lang/String;)V
-	goto	L011
+	iconst_1
 L014:
-.line 39
+	ifeq	L012
+.line 46
 	getstatic	newton2/number I
 	getstatic	newton2/number I
 	i2f
 	invokestatic	newton2/root(F)F
 	invokestatic	newton2/print(IF)V
-L011:
-L007:
-	getstatic	newton2/number I
-	iconst_0
-	if_icmpeq	L015
-	iconst_0
-	goto	L016
-L015:
-	iconst_1
-L016:
-	ifne	L006
+L012:
 	goto	L005
 L006:
 
@@ -181,6 +197,6 @@ L006:
 
 	return
 
-.limit locals 1
+.limit locals 2
 .limit stack 3
 .end method

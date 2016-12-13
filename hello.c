@@ -11,12 +11,12 @@ int adder(int num)
 int foobar(int test, float test2)
 {
 	int q, x, y, z;
+	x = 4;
 	if (test == 0)
 	{
 		q = 4;
 		x = x + q;
 	}
-	x = 4;
 	y = 3;
 	z = x * y + test;
 	return z;
@@ -35,7 +35,7 @@ int main()
 	int abc;
 	abc = 10;
 	// Compound expression
-	while (true)
+	while (i < 10)
 	{
 		int bar;
 		i = i + 1;
@@ -68,6 +68,6 @@ int main()
 //	rval = foobar(f, abc); // Error (invalid param types)
 //  rval = proc(); // Error (cannot assign to procedure)
 
-	return i;
+	write(rval);
 }
 

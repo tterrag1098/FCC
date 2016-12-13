@@ -2,9 +2,13 @@ PROGRAM IfTest;
 
 VAR
     i, j, t, f : integer;
+    k          : real;
 
 BEGIN {IF statements}
     i := 3;  j := 4; t := 0; f := 0;
+    k := 0.1;
+    
+    IF k = 0.0 THEN writeln(k);
 
     IF i < j THEN t := 300;
 

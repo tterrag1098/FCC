@@ -53,7 +53,7 @@ public class CallStandardGenerator extends CallGenerator
         // Get the actual parameters of the call.
         if (node.getChildren().size() > 0) {
             ICodeNode parmsNode = node.getChildren().get(0);
-            actualNode = parmsNode.getChildren().get(0);
+            actualNode = parmsNode.getChildren().size() == 0 ? null : parmsNode.getChildren().get(0);
         }
 
         switch ((RoutineCodeImpl) routineCode) {

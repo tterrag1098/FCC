@@ -22,6 +22,7 @@ import static wci.intermediate.typeimpl.TypeFormImpl.SUBRANGE;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Optional;
 
 import wci.frontend.Token;
 import wci.frontend.TokenType;
@@ -221,7 +222,7 @@ public class CallParser extends StatementParser
     {
         Definition formalDefn = formalId.getDefinition();
         TypeSpec formalType = formalId.getTypeSpec();
-        TypeSpec actualType = ((SymTabEntry)actualNode.getAttribute(ICodeKeyImpl.ID)).getTypeSpec();
+        TypeSpec actualType = Optional.ofNullable(((SymTabEntry)actualNode.getAttribute(ICodeKeyImpl.ID))).map(SymTabEntry::getTypeSpec).orElse(actualNode.getTypeSpec());
 
         // VAR parameter: The actual parameter must be a variable of the same
         //                type as the formal parameter.

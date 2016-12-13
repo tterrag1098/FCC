@@ -73,6 +73,10 @@ public abstract class Scanner
     {
         return source.nextChar();
     }
+    
+    public char peekChar() throws Exception {
+    	return source.peekChar();
+    }
 
     /**
      * Call the source's atEol() method.

@@ -1,14 +1,8 @@
 package wci.frontend.subsetc.parsers;
 
-import java.util.EnumSet;
-
-import wci.frontend.*;
-import wci.frontend.subsetc.*;
-import wci.intermediate.*;
-
-import static wci.frontend.subsetc.SubsetCTokenType.*;
-import static wci.frontend.subsetc.SubsetCErrorCode.*;
-import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
+import wci.frontend.Token;
+import wci.frontend.subsetc.SubsetCParserTD;
+import wci.intermediate.SymTabEntry;
 
 /**
  * <h1>ProgramParser</h1>

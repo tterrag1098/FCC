@@ -52,41 +52,11 @@ public class CompoundStatementParser extends StatementParser
 
         // Create the COMPOUND node.
         ICodeNode compoundNode = ICodeFactory.createICodeNode(COMPOUND);
-		if (parentId.getAttribute(SymTabKeyImpl.ROUTINE_SYMTAB) == null) {
-			parentId.setAttribute(SymTabKeyImpl.ROUTINE_SYMTAB, symTabStack.push());
-		} else {
-			symTabStack.push();
-		}
         
         // Parse the statement list terminated by the END token.
         StatementParser statementParser = new StatementParser(this);
         statementParser.parseList(token, compoundNode, parentId, RIGHT_BRACE, MISSING_END);
 
-        CrossReferencer cr = new CrossReferencer();
-        PrintStream replace = new PrintStream(System.out) {
-        	@Override
-        	public void println(String x) {
-        		nestedStacks.append(x + "\n");
-        	}
-        	
-        	public void print(String s) {
-        		nestedStacks.append(s);
-        	}
-        	
-        	@Override
-        	public void println() {
-        		nestedStacks.append("\n");
-        	}
-        };
-        
-        SymTab blockstack = symTabStack.pop();
-
-        PrintStream replaced = System.out;
-        System.setOut(replace);
-        nestedStacks.append("\n=== NESTED SYMBOL TABLE ===\n\n");
-        cr.printSymTab(blockstack, new ArrayList<>());
-        System.setOut(replaced);
-        nestedStacks.append("\n");
         return compoundNode;
     }
 }

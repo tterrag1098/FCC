@@ -6,6 +6,7 @@ import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 import static wci.intermediate.symtabimpl.RoutineCodeImpl.*;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
@@ -23,7 +24,9 @@ import wci.intermediate.TypeForm;
 import wci.intermediate.TypeSpec;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 import wci.intermediate.symtabimpl.Predefined;
+import wci.intermediate.symtabimpl.SymTabKeyImpl;
 import wci.intermediate.typeimpl.TypeFormImpl;
+import wci.util.CrossReferencer;
 
 /**
  * <h1>DeclaredRoutineParser</h1>
@@ -103,6 +106,8 @@ public class DeclaredRoutineParser extends DeclarationsParser
         routineId.setAttribute(ROUTINE_ICODE, iCode);
         routineId.setAttribute(ROUTINE_ROUTINES, new ArrayList<SymTabEntry>());
 
+		routineId.setAttribute(SymTabKeyImpl.ROUTINE_SYMTAB, symTabStack.push());
+		
         // Program: Set the program identifier in the symbol table stack.
         if (routineId.getName().equals("main") && routineDefn == DefinitionImpl.FUNCTION) {
             symTabStack.getProgramId().setAttribute(ROUTINE_ICODE, routineId.getAttribute(ROUTINE_ICODE));
@@ -143,6 +148,33 @@ public class DeclaredRoutineParser extends DeclarationsParser
             ICodeNode rootNode = blockParser.parse(token, routineId);
             iCode.setRoot(rootNode);
         }
+        
+
+        CrossReferencer cr = new CrossReferencer();
+        PrintStream replace = new PrintStream(System.out) {
+        	@Override
+        	public void println(String x) {
+        		nestedStacks.append(x + "\n");
+        	}
+        	
+        	public void print(String s) {
+        		nestedStacks.append(s);
+        	}
+        	
+        	@Override
+        	public void println() {
+        		nestedStacks.append("\n");
+        	}
+        };
+        
+        SymTab blockstack = symTabStack.pop();
+
+        PrintStream replaced = System.out;
+        System.setOut(replace);
+        nestedStacks.append("\n=== NESTED SYMBOL TABLE ===\n\n");
+        cr.printSymTab(blockstack, new ArrayList<>());
+        System.setOut(replaced);
+        nestedStacks.append("\n");
 
         return routineId;
     }
