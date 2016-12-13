@@ -3,7 +3,7 @@ import static wci.intermediate.symtabimpl.SymTabKeyImpl.ROUTINE_ICODE;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.ProcessBuilder.Redirect;
+import java.util.Scanner;
 
 import wci.backend.Backend;
 import wci.backend.BackendFactory;
@@ -13,7 +13,6 @@ import wci.frontend.Source;
 import wci.intermediate.ICode;
 import wci.intermediate.SymTabEntry;
 import wci.intermediate.SymTabStack;
-import wci.intermediate.icodeimpl.ICodeKeyImpl;
 import wci.intermediate.symtabimpl.DefinitionImpl;
 import wci.message.Message;
 import wci.message.MessageListener;
@@ -93,10 +92,19 @@ public class SubsetC
                 Process p = pb.start();
                 p.waitFor();
                 
-                pb = new ProcessBuilder("java", "-cp", "\"bin;.\"", name);
-                pb.inheritIO();
-                p = pb.start();
-                p.waitFor();
+                System.out.println("Would you like to execute the generated .class?");
+                Scanner scanner = new Scanner(System.in);
+				String in = scanner.nextLine();
+				if (in.toLowerCase().startsWith("y")) {
+
+					pb = new ProcessBuilder("java", "-cp", "\"bin;.\"", name);
+					pb.inheritIO();
+					p = pb.start();
+					p.waitFor();
+				}
+				
+				scanner.close();
+				System.out.println("\nDone!");
             }
         }
         catch (Exception ex) {
