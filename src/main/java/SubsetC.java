@@ -86,23 +86,26 @@ public class SubsetC
                 backend.process(iCode, symTabStack);
                 
                 String name = programId.getName();
-                
-                ProcessBuilder pb = new ProcessBuilder("java", "-jar", "jasmin.jar", name + ".j");
-                pb.inheritIO();
-                Process p = pb.start();
-                p.waitFor();
+
+                jasmin.Main.main(new String[] { name + ".j" });
                 
                 System.out.println("Would you like to execute the generated .class?");
                 Scanner scanner = new Scanner(System.in);
 				String in = scanner.nextLine();
-				if (in.toLowerCase().startsWith("y")) {
 
-					pb = new ProcessBuilder("java", "-cp", "\"bin;.\"", name);
+				if (in.toLowerCase().startsWith("y")) {
+					String jar = new java.io.File(SubsetC.class.getProtectionDomain()
+							  .getCodeSource()
+							  .getLocation()
+							  .getPath())
+							.getName();
+					
+					ProcessBuilder pb = new ProcessBuilder("java", "-cp", "\"" + jar + ";.	\"", name);
 					pb.inheritIO();
-					p = pb.start();
+					Process p = pb.start();
 					p.waitFor();
 				}
-				
+
 				scanner.close();
 				System.out.println("\nDone!");
             }
