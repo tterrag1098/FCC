@@ -2,7 +2,7 @@
 
 ## Building
 
-Clone this project and run `gradlew build` (or `./gradlew.sh build`) to build the JAR file.
+Clone this project and run `gradlew shadow` (or `./gradlew.sh shadow` on Mac/Linux) to build the JAR file.
 
 The result file will be created in build/libs/. Use the `-all` jar if you do not have jasmin downloaded.
 
