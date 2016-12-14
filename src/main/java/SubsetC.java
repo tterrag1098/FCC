@@ -100,7 +100,7 @@ public class SubsetC
 							  .getPath())
 							.getName();
 					
-					ProcessBuilder pb = new ProcessBuilder("java", "-cp", "\"" + jar + ";.	\"", name);
+					ProcessBuilder pb = new ProcessBuilder("java", "-cp", "\"" + jar + ";.\"", name);
 					pb.inheritIO();
 					Process p = pb.start();
 					p.waitFor();
